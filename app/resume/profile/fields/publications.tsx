@@ -69,7 +69,7 @@ export function PublicationReleaseDateField({ index }: PublicationFieldProps) {
                 <FormItem>
                     <FormLabel>Release Date</FormLabel>
                     <FormControl>
-                        <Input placeholder="e.g., 2023-06" {...field} />
+                        <Input type="date" {...field} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>

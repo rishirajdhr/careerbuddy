@@ -40,6 +40,7 @@ import {
     WorkStartDateField,
     WorkEndDateField,
     WorkSummaryField,
+    WorkLocationField,
 } from "./fields/work";
 import {
     DegreeTypeField,
@@ -53,6 +54,7 @@ import {
     SkillNameField,
     ProficiencyLevelField,
     SkillKeywordsField,
+    SkillsSearchField,
 } from "./fields/skills";
 import {
     ProjectNameField,
@@ -73,7 +75,11 @@ import {
     AwardDateField,
     AwardSummaryField,
 } from "./fields/awards";
-import { InterestNameField, InterestKeywordsField } from "./fields/interests";
+import {
+    InterestNameField,
+    InterestKeywordsField,
+    InterestsSearchField,
+} from "./fields/interests";
 import { LanguageField, FluencyField } from "./fields/languages";
 import {
     PublicationNameField,
@@ -283,6 +289,7 @@ function WorkExperience() {
                             <CompanyNameField index={index} />
                             <WorkStartDateField index={index} />
                             <WorkEndDateField index={index} />
+                            <WorkLocationField index={index} />
                             <WorkSummaryField index={index} />
                         </div>
                     </ProfileSectionEntry>
@@ -366,31 +373,6 @@ function Education() {
 }
 
 function Skills() {
-    const form = useFormContext<Resume>();
-    const { fields, append, remove } = useFieldArray({
-        control: form.control,
-        name: "skills",
-    });
-
-    const addSkill = () => {
-        if (profileFormDefaultValues.skills?.[0]) {
-            append(profileFormDefaultValues.skills[0]);
-        }
-    };
-
-    const handleRemove = (index: number) => {
-        if (fields.length > 1) {
-            remove(index);
-        } else {
-            if (profileFormDefaultValues.skills?.[0]) {
-                form.setValue(
-                    `skills.${index}`,
-                    profileFormDefaultValues.skills[0],
-                );
-            }
-        }
-    };
-
     return (
         <ProfileSection
             id="skills"
@@ -398,28 +380,7 @@ function Skills() {
             description="Your technical and professional skills"
             icon={<Code className="h-5 w-5" />}
         >
-            <div className="space-y-4">
-                {fields.map((field, index) => (
-                    <ProfileSectionEntry
-                        key={field.id}
-                        title={`Skill ${index + 1}`}
-                        onRemove={() => handleRemove(index)}
-                        removeAction={fields.length > 1 ? "delete" : "clear"}
-                    >
-                        <div className="grid grid-cols-2 gap-4">
-                            <SkillNameField index={index} />
-                            <ProficiencyLevelField index={index} />
-                        </div>
-                        <SkillKeywordsField index={index} />
-                    </ProfileSectionEntry>
-                ))}
-            </div>
-            <div className="flex justify-center">
-                <Button type="button" variant="outline" onClick={addSkill}>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Skill
-                </Button>
-            </div>
+            <SkillsSearchField />
         </ProfileSection>
     );
 }
@@ -614,31 +575,6 @@ function Awards() {
 }
 
 function Interests() {
-    const form = useFormContext<Resume>();
-    const { fields, append, remove } = useFieldArray({
-        control: form.control,
-        name: "interests",
-    });
-
-    const addInterest = () => {
-        if (profileFormDefaultValues.interests?.[0]) {
-            append(profileFormDefaultValues.interests[0]);
-        }
-    };
-
-    const handleRemove = (index: number) => {
-        if (fields.length > 1) {
-            remove(index);
-        } else {
-            if (profileFormDefaultValues.interests?.[0]) {
-                form.setValue(
-                    `interests.${index}`,
-                    profileFormDefaultValues.interests[0],
-                );
-            }
-        }
-    };
-
     return (
         <ProfileSection
             id="interests"
@@ -646,25 +582,7 @@ function Interests() {
             description="Your hobbies and personal interests"
             icon={<Heart className="h-5 w-5" />}
         >
-            <div className="space-y-4">
-                {fields.map((field, index) => (
-                    <ProfileSectionEntry
-                        key={field.id}
-                        title={`Interest ${index + 1}`}
-                        onRemove={() => handleRemove(index)}
-                        removeAction={fields.length > 1 ? "delete" : "clear"}
-                    >
-                        <InterestNameField index={index} />
-                        <InterestKeywordsField index={index} />
-                    </ProfileSectionEntry>
-                ))}
-            </div>
-            <div className="flex justify-center">
-                <Button type="button" variant="outline" onClick={addInterest}>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Interest
-                </Button>
-            </div>
+            <InterestsSearchField />
         </ProfileSection>
     );
 }

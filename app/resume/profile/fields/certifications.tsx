@@ -68,7 +68,7 @@ export function CertificationDateField({ index }: CertificationFieldProps) {
                 <FormItem>
                     <FormLabel>Date Earned</FormLabel>
                     <FormControl>
-                        <Input placeholder="e.g., 2023-03" {...field} />
+                        <Input type="date" {...field} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>

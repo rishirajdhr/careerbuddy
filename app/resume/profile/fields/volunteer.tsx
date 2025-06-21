@@ -63,7 +63,7 @@ export function VolunteerStartDateField({ index }: VolunteerFieldProps) {
                 <FormItem>
                     <FormLabel>Start Date</FormLabel>
                     <FormControl>
-                        <Input placeholder="e.g., 2022-01" {...field} />
+                        <Input type="date" {...field} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -83,7 +83,7 @@ export function VolunteerEndDateField({ index }: VolunteerFieldProps) {
                 <FormItem>
                     <FormLabel>End Date</FormLabel>
                     <FormControl>
-                        <Input placeholder="e.g., 2023-12" {...field} />
+                        <Input type="date" {...field} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>

@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import {
     FormControl,
     FormField,
@@ -8,6 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Resume } from "@/lib/schema";
 import { useFormContext } from "react-hook-form";
+import { TagInput, TagsList } from "@/components/ui/tag-input";
 
 type InterestFieldProps = { index: number };
 
@@ -51,5 +55,51 @@ export function InterestKeywordsField({ index }: InterestFieldProps) {
                 </FormItem>
             )}
         />
+    );
+}
+
+// Main Interests Component using reusable TagInput
+export function InterestsSearchField() {
+    const form = useFormContext<Resume>();
+    const [inputValue, setInputValue] = useState("");
+
+    const currentInterests = form.watch("interests") || [];
+
+    const addInterest = () => {
+        if (inputValue.trim()) {
+            const newInterest = { name: inputValue.trim(), keywords: [] };
+            const updatedInterests = [...currentInterests, newInterest];
+            form.setValue("interests", updatedInterests);
+            setInputValue("");
+        }
+    };
+
+    const removeInterest = (index: number) => {
+        const updatedInterests = currentInterests.filter((_, i) => i !== index);
+        form.setValue("interests", updatedInterests);
+    };
+
+    const interestNames = currentInterests
+        .map((interest) => interest.name)
+        .filter(Boolean) as string[];
+
+    return (
+        <FormItem>
+            <FormLabel>Interests</FormLabel>
+            <div className="space-y-3">
+                <TagInput
+                    value={inputValue}
+                    onChange={setInputValue}
+                    onAdd={addInterest}
+                    placeholder="Type an interest and press Enter or click +"
+                />
+                <TagsList
+                    tags={interestNames}
+                    onRemove={removeInterest}
+                    color="blue"
+                />
+            </div>
+            <FormMessage />
+        </FormItem>
     );
 }

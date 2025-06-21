@@ -6,10 +6,24 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import { Resume } from "@/lib/schema";
 import { useFormContext } from "react-hook-form";
 
 type LanguageFieldProps = { index: number };
+
+const proficiencyLevels = [
+    "Fluent/Native",
+    "Advanced",
+    "Intermediate",
+    "Beginner",
+];
 
 export function LanguageField({ index }: LanguageFieldProps) {
     const form = useFormContext<Resume>();
@@ -41,12 +55,20 @@ export function FluencyField({ index }: LanguageFieldProps) {
             render={({ field }) => (
                 <FormItem>
                     <FormLabel>Proficiency Level</FormLabel>
-                    <FormControl>
-                        <Input
-                            placeholder="e.g., Fluent, Intermediate, Basic"
-                            {...field}
-                        />
-                    </FormControl>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select proficiency level" />
+                            </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                            {proficiencyLevels.map((level) => (
+                                <SelectItem key={level} value={level}>
+                                    {level}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                     <FormMessage />
                 </FormItem>
             )}

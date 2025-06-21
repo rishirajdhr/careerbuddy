@@ -37,11 +37,11 @@ export const profileFormDefaultValues: Resume = {
             courses: [],
         },
     ],
-    skills: [{ name: "", level: "", keywords: [] }],
+    skills: [],
     projects: [{ name: "", description: "", url: "", keywords: [] }],
     certificates: [{ name: "", date: "", issuer: "", url: "" }],
     awards: [{ title: "", date: "", awarder: "", summary: "" }],
-    interests: [{ name: "", keywords: [] }],
+    interests: [],
     languages: [{ language: "", fluency: "" }],
     publications: [
         { name: "", publisher: "", releaseDate: "", url: "", summary: "" },

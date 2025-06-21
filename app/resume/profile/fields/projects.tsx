@@ -70,7 +70,7 @@ export function ProjectStartDateField({ index }: ProjectFieldProps) {
                 <FormItem>
                     <FormLabel>Start Date</FormLabel>
                     <FormControl>
-                        <Input placeholder="e.g., 2023-01" {...field} />
+                        <Input type="date" {...field} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -90,7 +90,7 @@ export function ProjectEndDateField({ index }: ProjectFieldProps) {
                 <FormItem>
                     <FormLabel>End Date</FormLabel>
                     <FormControl>
-                        <Input placeholder="e.g., 2023-06" {...field} />
+                        <Input type="date" {...field} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>

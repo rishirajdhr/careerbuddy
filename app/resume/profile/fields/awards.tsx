@@ -66,7 +66,7 @@ export function AwardDateField({ index }: AwardFieldProps) {
                 <FormItem>
                     <FormLabel>Date Received</FormLabel>
                     <FormControl>
-                        <Input placeholder="e.g., 2023-12" {...field} />
+                        <Input type="date" {...field} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>

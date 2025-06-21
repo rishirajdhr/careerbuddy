@@ -67,7 +67,7 @@ export function WorkStartDateField({ index }: WorkFieldProps) {
                 <FormItem>
                     <FormLabel>Start Date</FormLabel>
                     <FormControl>
-                        <Input placeholder="e.g., 2022-01" {...field} />
+                        <Input type="date" {...field} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -87,7 +87,7 @@ export function WorkEndDateField({ index }: WorkFieldProps) {
                 <FormItem>
                     <FormLabel>End Date</FormLabel>
                     <FormControl>
-                        <Input placeholder="Present" {...field} />
+                        <Input type="date" {...field} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -112,6 +112,26 @@ export function WorkSummaryField({ index }: WorkFieldProps) {
                             rows={4}
                             {...field}
                         />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            )}
+        />
+    );
+}
+
+export function WorkLocationField({ index }: WorkFieldProps) {
+    const form = useFormContext<Resume>();
+
+    return (
+        <FormField
+            control={form.control}
+            name={`work.${index}.location`}
+            render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Location</FormLabel>
+                    <FormControl>
+                        <Input placeholder="e.g., New York, NY" {...field} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>

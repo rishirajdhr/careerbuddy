@@ -108,7 +108,7 @@ export function EducationStartDateField({ index }: EducationFieldProps) {
                 <FormItem>
                     <FormLabel>Start Date</FormLabel>
                     <FormControl>
-                        <Input placeholder="e.g., 2018-09" {...field} />
+                        <Input type="date" {...field} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -128,7 +128,7 @@ export function EducationEndDateField({ index }: EducationFieldProps) {
                 <FormItem>
                     <FormLabel>End Date</FormLabel>
                     <FormControl>
-                        <Input placeholder="e.g., 2022-05" {...field} />
+                        <Input type="date" {...field} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
