@@ -24,9 +24,6 @@ export function NameField() {
                     <FormControl>
                         <Input placeholder="Enter your full name" {...field} />
                     </FormControl>
-                    <FormDescription>
-                        This is your public display name.
-                    </FormDescription>
                     <FormMessage />
                 </FormItem>
             )}
@@ -47,9 +44,6 @@ export function EmailField() {
                     <FormControl>
                         <Input placeholder="Enter your email" {...field} />
                     </FormControl>
-                    <FormDescription>
-                        We'll use this to contact you.
-                    </FormDescription>
                     <FormMessage />
                 </FormItem>
             )}
@@ -73,9 +67,6 @@ export function PhoneField() {
                             {...field}
                         />
                     </FormControl>
-                    <FormDescription>
-                        Optional, for contact purposes.
-                    </FormDescription>
                     <FormMessage />
                 </FormItem>
             )}
@@ -96,9 +87,6 @@ export function LocationField() {
                     <FormControl>
                         <Input placeholder="Enter your location" {...field} />
                     </FormControl>
-                    <FormDescription>
-                        Optional, for job applications.
-                    </FormDescription>
                     <FormMessage />
                 </FormItem>
             )}
@@ -122,9 +110,6 @@ export function SummaryField() {
                             {...field}
                         />
                     </FormControl>
-                    <FormDescription>
-                        A short introduction about your professional background.
-                    </FormDescription>
                     <FormMessage />
                 </FormItem>
             )}
@@ -145,9 +130,6 @@ export function WebsiteField() {
                     <FormControl>
                         <Input placeholder="Personal website URL" {...field} />
                     </FormControl>
-                    <FormDescription>
-                        Optional, to showcase your work.
-                    </FormDescription>
                     <FormMessage />
                 </FormItem>
             )}
@@ -171,9 +153,6 @@ export function LinkedInField() {
                             {...field}
                         />
                     </FormControl>
-                    <FormDescription>
-                        Optional, for professional networking.
-                    </FormDescription>
                     <FormMessage />
                 </FormItem>
             )}
