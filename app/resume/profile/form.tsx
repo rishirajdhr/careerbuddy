@@ -32,7 +32,63 @@ import {
     WebsiteField,
     LinkedInField,
     SummaryField,
-} from "./fields";
+} from "./fields/personal-information";
+import {
+    PositionField,
+    CompanyNameField,
+    WorkStartDateField,
+    WorkEndDateField,
+    WorkSummaryField,
+} from "./fields/work";
+import {
+    DegreeTypeField,
+    FieldOfStudyField,
+    InstitutionField,
+    GpaField,
+    EducationStartDateField,
+    EducationEndDateField,
+} from "./fields/education";
+import {
+    SkillNameField,
+    ProficiencyLevelField,
+    SkillKeywordsField,
+} from "./fields/skills";
+import {
+    ProjectNameField,
+    ProjectDescriptionField,
+    ProjectStartDateField,
+    ProjectEndDateField,
+    ProjectUrlField,
+} from "./fields/projects";
+import {
+    CertificationNameField,
+    IssuerField,
+    CertificationDateField,
+    CertificationUrlField,
+} from "./fields/certifications";
+import {
+    AwardTitleField,
+    AwarderField,
+    AwardDateField,
+    AwardSummaryField,
+} from "./fields/awards";
+import { InterestNameField, InterestKeywordsField } from "./fields/interests";
+import { LanguageField, FluencyField } from "./fields/languages";
+import {
+    PublicationNameField,
+    PublisherField,
+    PublicationReleaseDateField,
+    PublicationUrlField,
+    PublicationSummaryField,
+} from "./fields/publications";
+import {
+    VolunteerPositionField,
+    OrganizationField,
+    VolunteerStartDateField,
+    VolunteerEndDateField,
+    VolunteerUrlField,
+    VolunteerSummaryField,
+} from "./fields/volunteer";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -43,6 +99,12 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface ProfileFormProps {
     data: Resume;
@@ -110,20 +172,34 @@ function ProfileSectionEntry({
     children,
 }: ProfileSectionEntryProps) {
     return (
-        <div className="rounded-lg border border-gray-200 bg-gray-50/50 p-4 transition-colors hover:bg-gray-50">
-            <div className="mb-4 flex items-center justify-between">
-                <h3 className="font-medium text-gray-900">{title}</h3>
-                <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={onRemove}
-                    className="text-gray-400 hover:text-red-500"
-                >
-                    <Trash2 className="h-4 w-4" />
-                </Button>
+        <div className="flex flex-row overflow-hidden rounded-lg border border-gray-200 p-0 shadow-2xs transition-shadow duration-300 focus-within:shadow-lg">
+            <div className="w-1.5 flex-none bg-blue-600"></div>
+            <div className="flex-1 p-4">
+                <div className="mb-4 flex items-center justify-between">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                        {title}
+                    </h3>
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={onRemove}
+                                    className="cursor-pointer text-gray-400 hover:text-red-500"
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Remove item</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                </div>
+                <div className="space-y-4">{children}</div>
             </div>
-            <div className="space-y-4">{children}</div>
         </div>
     );
 }
@@ -188,62 +264,14 @@ function WorkExperience() {
                         onRemove={() => remove(index)}
                     >
                         <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <Label htmlFor={`work.${index}.position`}>
-                                    Job Title
-                                </Label>
-                                <Input
-                                    id={`work.${index}.position`}
-                                    placeholder="e.g., Senior Software Engineer"
-                                    {...form.register(`work.${index}.position`)}
-                                />
-                            </div>
-                            <div>
-                                <Label htmlFor={`work.${index}.name`}>
-                                    Company
-                                </Label>
-                                <Input
-                                    id={`work.${index}.name`}
-                                    placeholder="e.g., TechCorp Inc."
-                                    {...form.register(`work.${index}.name`)}
-                                />
-                            </div>
+                            <PositionField index={index} />
+                            <CompanyNameField index={index} />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <Label htmlFor={`work.${index}.startDate`}>
-                                    Start Date
-                                </Label>
-                                <Input
-                                    id={`work.${index}.startDate`}
-                                    placeholder="e.g., 2022-01"
-                                    {...form.register(
-                                        `work.${index}.startDate`,
-                                    )}
-                                />
-                            </div>
-                            <div>
-                                <Label htmlFor={`work.${index}.endDate`}>
-                                    End Date
-                                </Label>
-                                <Input
-                                    id={`work.${index}.endDate`}
-                                    placeholder="Present"
-                                    {...form.register(`work.${index}.endDate`)}
-                                />
-                            </div>
+                            <WorkStartDateField index={index} />
+                            <WorkEndDateField index={index} />
                         </div>
-                        <div>
-                            <Label htmlFor={`work.${index}.summary`}>
-                                Summary
-                            </Label>
-                            <Textarea
-                                id={`work.${index}.summary`}
-                                placeholder="Describe your key responsibilities and achievements..."
-                                rows={4}
-                                {...form.register(`work.${index}.summary`)}
-                            />
-                        </div>
+                        <WorkSummaryField index={index} />
                     </ProfileSectionEntry>
                 ))}
             </div>
@@ -298,84 +326,16 @@ function Education() {
                         onRemove={() => remove(index)}
                     >
                         <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <Label htmlFor={`education.${index}.studyType`}>
-                                    Degree Type
-                                </Label>
-                                <Input
-                                    id={`education.${index}.studyType`}
-                                    placeholder="e.g., Bachelor's"
-                                    {...form.register(
-                                        `education.${index}.studyType`,
-                                    )}
-                                />
-                            </div>
-                            <div>
-                                <Label htmlFor={`education.${index}.area`}>
-                                    Field of Study
-                                </Label>
-                                <Input
-                                    id={`education.${index}.area`}
-                                    placeholder="e.g., Computer Science"
-                                    {...form.register(
-                                        `education.${index}.area`,
-                                    )}
-                                />
-                            </div>
+                            <DegreeTypeField index={index} />
+                            <FieldOfStudyField index={index} />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <Label
-                                    htmlFor={`education.${index}.institution`}
-                                >
-                                    Institution
-                                </Label>
-                                <Input
-                                    id={`education.${index}.institution`}
-                                    placeholder="e.g., University of Technology"
-                                    {...form.register(
-                                        `education.${index}.institution`,
-                                    )}
-                                />
-                            </div>
-                            <div>
-                                <Label htmlFor={`education.${index}.score`}>
-                                    GPA (Optional)
-                                </Label>
-                                <Input
-                                    id={`education.${index}.score`}
-                                    placeholder="e.g., 3.8"
-                                    {...form.register(
-                                        `education.${index}.score`,
-                                    )}
-                                />
-                            </div>
+                            <InstitutionField index={index} />
+                            <GpaField index={index} />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <Label htmlFor={`education.${index}.startDate`}>
-                                    Start Date
-                                </Label>
-                                <Input
-                                    id={`education.${index}.startDate`}
-                                    placeholder="e.g., 2018-09"
-                                    {...form.register(
-                                        `education.${index}.startDate`,
-                                    )}
-                                />
-                            </div>
-                            <div>
-                                <Label htmlFor={`education.${index}.endDate`}>
-                                    End Date
-                                </Label>
-                                <Input
-                                    id={`education.${index}.endDate`}
-                                    placeholder="e.g., 2022-05"
-                                    {...form.register(
-                                        `education.${index}.endDate`,
-                                    )}
-                                />
-                            </div>
+                            <EducationStartDateField index={index} />
+                            <EducationEndDateField index={index} />
                         </div>
                     </ProfileSectionEntry>
                 ))}
@@ -422,37 +382,10 @@ function Skills() {
                         onRemove={() => remove(index)}
                     >
                         <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <Label htmlFor={`skills.${index}.name`}>
-                                    Skill Name
-                                </Label>
-                                <Input
-                                    id={`skills.${index}.name`}
-                                    placeholder="e.g., JavaScript"
-                                    {...form.register(`skills.${index}.name`)}
-                                />
-                            </div>
-                            <div>
-                                <Label htmlFor={`skills.${index}.level`}>
-                                    Proficiency Level
-                                </Label>
-                                <Input
-                                    id={`skills.${index}.level`}
-                                    placeholder="e.g., Advanced, Intermediate"
-                                    {...form.register(`skills.${index}.level`)}
-                                />
-                            </div>
+                            <SkillNameField index={index} />
+                            <ProficiencyLevelField index={index} />
                         </div>
-                        <div>
-                            <Label htmlFor={`skills.${index}.keywords`}>
-                                Keywords (Optional)
-                            </Label>
-                            <Input
-                                id={`skills.${index}.keywords`}
-                                placeholder="e.g., React, Node.js, TypeScript (comma separated)"
-                                {...form.register(`skills.${index}.keywords`)}
-                            />
-                        </div>
+                        <SkillKeywordsField index={index} />
                     </ProfileSectionEntry>
                 ))}
             </div>
@@ -497,65 +430,13 @@ function Projects() {
                         title={`Project ${index + 1}`}
                         onRemove={() => remove(index)}
                     >
-                        <div>
-                            <Label htmlFor={`projects.${index}.name`}>
-                                Project Name
-                            </Label>
-                            <Input
-                                id={`projects.${index}.name`}
-                                placeholder="e.g., E-commerce Platform"
-                                {...form.register(`projects.${index}.name`)}
-                            />
-                        </div>
-                        <div>
-                            <Label htmlFor={`projects.${index}.description`}>
-                                Description
-                            </Label>
-                            <Textarea
-                                id={`projects.${index}.description`}
-                                placeholder="Describe the project..."
-                                rows={3}
-                                {...form.register(
-                                    `projects.${index}.description`,
-                                )}
-                            />
-                        </div>
+                        <ProjectNameField index={index} />
+                        <ProjectDescriptionField index={index} />
                         <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <Label htmlFor={`projects.${index}.startDate`}>
-                                    Start Date
-                                </Label>
-                                <Input
-                                    id={`projects.${index}.startDate`}
-                                    placeholder="e.g., 2023-01"
-                                    {...form.register(
-                                        `projects.${index}.startDate`,
-                                    )}
-                                />
-                            </div>
-                            <div>
-                                <Label htmlFor={`projects.${index}.endDate`}>
-                                    End Date
-                                </Label>
-                                <Input
-                                    id={`projects.${index}.endDate`}
-                                    placeholder="e.g., 2023-06"
-                                    {...form.register(
-                                        `projects.${index}.endDate`,
-                                    )}
-                                />
-                            </div>
+                            <ProjectStartDateField index={index} />
+                            <ProjectEndDateField index={index} />
                         </div>
-                        <div>
-                            <Label htmlFor={`projects.${index}.url`}>
-                                Project URL (Optional)
-                            </Label>
-                            <Input
-                                id={`projects.${index}.url`}
-                                placeholder="https://github.com/username/project"
-                                {...form.register(`projects.${index}.url`)}
-                            />
-                        </div>
+                        <ProjectUrlField index={index} />
                     </ProfileSectionEntry>
                 ))}
             </div>
@@ -601,56 +482,12 @@ function Certifications() {
                         onRemove={() => remove(index)}
                     >
                         <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <Label htmlFor={`certificates.${index}.name`}>
-                                    Certification Name
-                                </Label>
-                                <Input
-                                    id={`certificates.${index}.name`}
-                                    placeholder="e.g., AWS Certified Solutions Architect"
-                                    {...form.register(
-                                        `certificates.${index}.name`,
-                                    )}
-                                />
-                            </div>
-                            <div>
-                                <Label htmlFor={`certificates.${index}.issuer`}>
-                                    Issuing Organization
-                                </Label>
-                                <Input
-                                    id={`certificates.${index}.issuer`}
-                                    placeholder="e.g., Amazon Web Services"
-                                    {...form.register(
-                                        `certificates.${index}.issuer`,
-                                    )}
-                                />
-                            </div>
+                            <CertificationNameField index={index} />
+                            <IssuerField index={index} />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <Label htmlFor={`certificates.${index}.date`}>
-                                    Date Earned
-                                </Label>
-                                <Input
-                                    id={`certificates.${index}.date`}
-                                    placeholder="e.g., 2023-03"
-                                    {...form.register(
-                                        `certificates.${index}.date`,
-                                    )}
-                                />
-                            </div>
-                            <div>
-                                <Label htmlFor={`certificates.${index}.url`}>
-                                    Certificate URL (Optional)
-                                </Label>
-                                <Input
-                                    id={`certificates.${index}.url`}
-                                    placeholder="https://credly.com/badges/..."
-                                    {...form.register(
-                                        `certificates.${index}.url`,
-                                    )}
-                                />
-                            </div>
+                            <CertificationDateField index={index} />
+                            <CertificationUrlField index={index} />
                         </div>
                     </ProfileSectionEntry>
                 ))}
@@ -701,52 +538,13 @@ function Awards() {
                         onRemove={() => remove(index)}
                     >
                         <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <Label htmlFor={`awards.${index}.title`}>
-                                    Award Title
-                                </Label>
-                                <Input
-                                    id={`awards.${index}.title`}
-                                    placeholder="e.g., Employee of the Year"
-                                    {...form.register(`awards.${index}.title`)}
-                                />
-                            </div>
-                            <div>
-                                <Label htmlFor={`awards.${index}.awarder`}>
-                                    Awarding Organization
-                                </Label>
-                                <Input
-                                    id={`awards.${index}.awarder`}
-                                    placeholder="e.g., TechCorp Inc."
-                                    {...form.register(
-                                        `awards.${index}.awarder`,
-                                    )}
-                                />
-                            </div>
+                            <AwardTitleField index={index} />
+                            <AwarderField index={index} />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <Label htmlFor={`awards.${index}.date`}>
-                                    Date Received
-                                </Label>
-                                <Input
-                                    id={`awards.${index}.date`}
-                                    placeholder="e.g., 2023-12"
-                                    {...form.register(`awards.${index}.date`)}
-                                />
-                            </div>
+                            <AwardDateField index={index} />
                         </div>
-                        <div>
-                            <Label htmlFor={`awards.${index}.summary`}>
-                                Description
-                            </Label>
-                            <Textarea
-                                id={`awards.${index}.summary`}
-                                placeholder="Describe the award and its significance..."
-                                rows={3}
-                                {...form.register(`awards.${index}.summary`)}
-                            />
-                        </div>
+                        <AwardSummaryField index={index} />
                     </ProfileSectionEntry>
                 ))}
             </div>
@@ -791,28 +589,8 @@ function Interests() {
                         title={`Interest ${index + 1}`}
                         onRemove={() => remove(index)}
                     >
-                        <div>
-                            <Label htmlFor={`interests.${index}.name`}>
-                                Interest Name
-                            </Label>
-                            <Input
-                                id={`interests.${index}.name`}
-                                placeholder="e.g., Photography"
-                                {...form.register(`interests.${index}.name`)}
-                            />
-                        </div>
-                        <div>
-                            <Label htmlFor={`interests.${index}.keywords`}>
-                                Keywords
-                            </Label>
-                            <Input
-                                id={`interests.${index}.keywords`}
-                                placeholder="e.g., landscape, portrait, digital (comma separated)"
-                                {...form.register(
-                                    `interests.${index}.keywords`,
-                                )}
-                            />
-                        </div>
+                        <InterestNameField index={index} />
+                        <InterestKeywordsField index={index} />
                     </ProfileSectionEntry>
                 ))}
             </div>
@@ -858,30 +636,8 @@ function Languages() {
                         onRemove={() => remove(index)}
                     >
                         <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <Label htmlFor={`languages.${index}.language`}>
-                                    Language
-                                </Label>
-                                <Input
-                                    id={`languages.${index}.language`}
-                                    placeholder="e.g., Spanish"
-                                    {...form.register(
-                                        `languages.${index}.language`,
-                                    )}
-                                />
-                            </div>
-                            <div>
-                                <Label htmlFor={`languages.${index}.fluency`}>
-                                    Proficiency Level
-                                </Label>
-                                <Input
-                                    id={`languages.${index}.fluency`}
-                                    placeholder="e.g., Fluent, Intermediate, Basic"
-                                    {...form.register(
-                                        `languages.${index}.fluency`,
-                                    )}
-                                />
-                            </div>
+                            <LanguageField index={index} />
+                            <FluencyField index={index} />
                         </div>
                     </ProfileSectionEntry>
                 ))}
@@ -933,69 +689,13 @@ function Publications() {
                         title={`Publication ${index + 1}`}
                         onRemove={() => remove(index)}
                     >
-                        <div>
-                            <Label htmlFor={`publications.${index}.name`}>
-                                Publication Title
-                            </Label>
-                            <Input
-                                id={`publications.${index}.name`}
-                                placeholder="e.g., Advanced React Patterns"
-                                {...form.register(`publications.${index}.name`)}
-                            />
-                        </div>
+                        <PublicationNameField index={index} />
                         <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <Label
-                                    htmlFor={`publications.${index}.publisher`}
-                                >
-                                    Publisher
-                                </Label>
-                                <Input
-                                    id={`publications.${index}.publisher`}
-                                    placeholder="e.g., ACM Digital Library"
-                                    {...form.register(
-                                        `publications.${index}.publisher`,
-                                    )}
-                                />
-                            </div>
-                            <div>
-                                <Label
-                                    htmlFor={`publications.${index}.releaseDate`}
-                                >
-                                    Release Date
-                                </Label>
-                                <Input
-                                    id={`publications.${index}.releaseDate`}
-                                    placeholder="e.g., 2023-06"
-                                    {...form.register(
-                                        `publications.${index}.releaseDate`,
-                                    )}
-                                />
-                            </div>
+                            <PublisherField index={index} />
+                            <PublicationReleaseDateField index={index} />
                         </div>
-                        <div>
-                            <Label htmlFor={`publications.${index}.url`}>
-                                Publication URL
-                            </Label>
-                            <Input
-                                id={`publications.${index}.url`}
-                                placeholder="https://..."
-                                {...form.register(`publications.${index}.url`)}
-                            />
-                        </div>
-                        <div>
-                            <Label htmlFor={`publications.${index}.summary`}>
-                                Summary
-                            </Label>
-                            <Textarea
-                                id={`publications.${index}.summary`}
-                                placeholder="Brief description of the publication..."
-                                rows={3}
-                                {...form.register(
-                                    `publications.${index}.summary`,
-                                )}
-                            />
-                        </div>
+                        <PublicationUrlField index={index} />
+                        <PublicationSummaryField index={index} />
                     </ProfileSectionEntry>
                 ))}
             </div>
@@ -1052,80 +752,15 @@ function Volunteer() {
                         onRemove={() => remove(index)}
                     >
                         <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <Label htmlFor={`volunteer.${index}.position`}>
-                                    Position
-                                </Label>
-                                <Input
-                                    id={`volunteer.${index}.position`}
-                                    placeholder="e.g., Board Member"
-                                    {...form.register(
-                                        `volunteer.${index}.position`,
-                                    )}
-                                />
-                            </div>
-                            <div>
-                                <Label
-                                    htmlFor={`volunteer.${index}.organization`}
-                                >
-                                    Organization
-                                </Label>
-                                <Input
-                                    id={`volunteer.${index}.organization`}
-                                    placeholder="e.g., Local Food Bank"
-                                    {...form.register(
-                                        `volunteer.${index}.organization`,
-                                    )}
-                                />
-                            </div>
+                            <VolunteerPositionField index={index} />
+                            <OrganizationField index={index} />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <Label htmlFor={`volunteer.${index}.startDate`}>
-                                    Start Date
-                                </Label>
-                                <Input
-                                    id={`volunteer.${index}.startDate`}
-                                    placeholder="e.g., 2022-01"
-                                    {...form.register(
-                                        `volunteer.${index}.startDate`,
-                                    )}
-                                />
-                            </div>
-                            <div>
-                                <Label htmlFor={`volunteer.${index}.endDate`}>
-                                    End Date
-                                </Label>
-                                <Input
-                                    id={`volunteer.${index}.endDate`}
-                                    placeholder="e.g., 2023-12"
-                                    {...form.register(
-                                        `volunteer.${index}.endDate`,
-                                    )}
-                                />
-                            </div>
+                            <VolunteerStartDateField index={index} />
+                            <VolunteerEndDateField index={index} />
                         </div>
-                        <div>
-                            <Label htmlFor={`volunteer.${index}.url`}>
-                                Organization URL (Optional)
-                            </Label>
-                            <Input
-                                id={`volunteer.${index}.url`}
-                                placeholder="https://..."
-                                {...form.register(`volunteer.${index}.url`)}
-                            />
-                        </div>
-                        <div>
-                            <Label htmlFor={`volunteer.${index}.summary`}>
-                                Summary
-                            </Label>
-                            <Textarea
-                                id={`volunteer.${index}.summary`}
-                                placeholder="Describe your volunteer work and contributions..."
-                                rows={4}
-                                {...form.register(`volunteer.${index}.summary`)}
-                            />
-                        </div>
+                        <VolunteerUrlField index={index} />
+                        <VolunteerSummaryField index={index} />
                     </ProfileSectionEntry>
                 ))}
             </div>
