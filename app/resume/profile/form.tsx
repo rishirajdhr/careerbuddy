@@ -136,7 +136,7 @@ function ProfileSection({
                 className="w-full"
             >
                 <AccordionItem value={id}>
-                    <AccordionTrigger className="[&>svg]:m px-6 py-4 text-xl font-semibold hover:no-underline [&>svg]:size-6">
+                    <AccordionTrigger className="px-6 py-4 text-xl font-semibold hover:no-underline [&>svg]:mt-2 [&>svg]:size-6">
                         <div className="flex items-center gap-3">
                             <div className="grid size-12 place-items-center rounded-full bg-blue-600 text-white">
                                 {icon}
