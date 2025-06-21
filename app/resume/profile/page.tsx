@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Resume, ResumeSchema } from "@/lib/schema";
 import { ProfileForm, RESUME_SECTIONS as ALL_SECTIONS } from "./form";
 import { SectionManager } from "./section-manager";
+import { profileFormDefaultValues } from "./default-values";
 
 type SectionWithState = (typeof ALL_SECTIONS)[number] & {
     enabled: boolean;
@@ -120,23 +121,7 @@ export default function ProfilePage() {
     const router = useRouter();
     const [sections, setSections] =
         useState<SectionWithState[]>(initialSections);
-    const [formData, setFormData] = useState<Resume>({
-        basics: {
-            name: "",
-            email: "",
-            phone: "",
-            location: {
-                address: "",
-                postalCode: "",
-                city: "",
-                countryCode: "",
-                region: "",
-            },
-            url: "",
-            profiles: [{ network: "LinkedIn", username: "", url: "" }],
-            summary: "",
-        },
-    });
+    const [formData, setFormData] = useState<Resume>(profileFormDefaultValues);
 
     const handleNext = (data: Resume) => {
         // Save form data (you can use context or localStorage here)

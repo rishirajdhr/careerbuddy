@@ -104,7 +104,7 @@ export function WorkSummaryField({ index }: WorkFieldProps) {
             control={form.control}
             name={`work.${index}.summary`}
             render={({ field }) => (
-                <FormItem>
+                <FormItem className="col-span-2">
                     <FormLabel>Summary</FormLabel>
                     <FormControl>
                         <Textarea

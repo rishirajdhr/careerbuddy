@@ -17,6 +17,7 @@ import {
     Users,
     FileText,
     User,
+    RotateCcw,
 } from "lucide-react";
 import {
     useForm,
@@ -105,6 +106,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { profileFormDefaultValues } from "./default-values";
 
 interface ProfileFormProps {
     data: Resume;
@@ -164,13 +166,23 @@ interface ProfileSectionEntryProps {
     title: string;
     onRemove: () => void;
     children: ReactNode;
+    removeAction: "clear" | "delete";
 }
 
 function ProfileSectionEntry({
     title,
     onRemove,
     children,
+    removeAction,
 }: ProfileSectionEntryProps) {
+    const isClearAction = removeAction === "clear";
+    const tooltipText = isClearAction ? "Reset item" : "Remove item";
+    const icon = isClearAction ? (
+        <RotateCcw className="h-4 w-4" />
+    ) : (
+        <Trash2 className="h-4 w-4" />
+    );
+
     return (
         <div className="flex flex-row overflow-hidden rounded-lg border border-gray-200 p-0 shadow-2xs transition-shadow duration-300 focus-within:shadow-lg">
             <div className="w-1.5 flex-none bg-blue-600"></div>
@@ -189,11 +201,11 @@ function ProfileSectionEntry({
                                     onClick={onRemove}
                                     className="cursor-pointer text-gray-400 hover:text-red-500"
                                 >
-                                    <Trash2 className="h-4 w-4" />
+                                    {icon}
                                 </Button>
                             </TooltipTrigger>
                             <TooltipContent>
-                                <p>Remove item</p>
+                                <p>{tooltipText}</p>
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
@@ -232,21 +244,23 @@ function WorkExperience() {
         name: "work",
     });
 
-    useEffect(() => {
-        if (fields.length === 0) {
-            addExperience();
-        }
-    }, [fields, append]);
-
     const addExperience = () => {
-        append({
-            name: "",
-            position: "",
-            startDate: "",
-            endDate: "",
-            summary: "",
-            highlights: [],
-        });
+        if (profileFormDefaultValues.work?.[0]) {
+            append(profileFormDefaultValues.work[0]);
+        }
+    };
+
+    const handleRemove = (index: number) => {
+        if (fields.length > 1) {
+            remove(index);
+        } else {
+            if (profileFormDefaultValues.work?.[0]) {
+                form.setValue(
+                    `work.${index}`,
+                    profileFormDefaultValues.work[0],
+                );
+            }
+        }
     };
 
     return (
@@ -261,17 +275,16 @@ function WorkExperience() {
                     <ProfileSectionEntry
                         key={field.id}
                         title={`Work Experience ${index + 1}`}
-                        onRemove={() => remove(index)}
+                        onRemove={() => handleRemove(index)}
+                        removeAction={fields.length > 1 ? "delete" : "clear"}
                     >
                         <div className="grid grid-cols-2 gap-4">
                             <PositionField index={index} />
                             <CompanyNameField index={index} />
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
                             <WorkStartDateField index={index} />
                             <WorkEndDateField index={index} />
+                            <WorkSummaryField index={index} />
                         </div>
-                        <WorkSummaryField index={index} />
                     </ProfileSectionEntry>
                 ))}
             </div>
@@ -293,22 +306,23 @@ function Education() {
         name: "education",
     });
 
-    useEffect(() => {
-        if (fields.length === 0) {
-            addEducation();
-        }
-    }, [fields, append]);
-
     const addEducation = () => {
-        append({
-            institution: "",
-            area: "",
-            studyType: "",
-            startDate: "",
-            endDate: "",
-            score: "",
-            courses: [],
-        });
+        if (profileFormDefaultValues.education?.[0]) {
+            append(profileFormDefaultValues.education[0]);
+        }
+    };
+
+    const handleRemove = (index: number) => {
+        if (fields.length > 1) {
+            remove(index);
+        } else {
+            if (profileFormDefaultValues.education?.[0]) {
+                form.setValue(
+                    `education.${index}`,
+                    profileFormDefaultValues.education[0],
+                );
+            }
+        }
     };
 
     return (
@@ -323,7 +337,8 @@ function Education() {
                     <ProfileSectionEntry
                         key={field.id}
                         title={`Education ${index + 1}`}
-                        onRemove={() => remove(index)}
+                        onRemove={() => handleRemove(index)}
+                        removeAction={fields.length > 1 ? "delete" : "clear"}
                     >
                         <div className="grid grid-cols-2 gap-4">
                             <DegreeTypeField index={index} />
@@ -357,14 +372,23 @@ function Skills() {
         name: "skills",
     });
 
-    useEffect(() => {
-        if (fields.length === 0) {
-            addSkill();
-        }
-    }, [fields, append]);
-
     const addSkill = () => {
-        append({ name: "", level: "", keywords: [] });
+        if (profileFormDefaultValues.skills?.[0]) {
+            append(profileFormDefaultValues.skills[0]);
+        }
+    };
+
+    const handleRemove = (index: number) => {
+        if (fields.length > 1) {
+            remove(index);
+        } else {
+            if (profileFormDefaultValues.skills?.[0]) {
+                form.setValue(
+                    `skills.${index}`,
+                    profileFormDefaultValues.skills[0],
+                );
+            }
+        }
     };
 
     return (
@@ -379,7 +403,8 @@ function Skills() {
                     <ProfileSectionEntry
                         key={field.id}
                         title={`Skill ${index + 1}`}
-                        onRemove={() => remove(index)}
+                        onRemove={() => handleRemove(index)}
+                        removeAction={fields.length > 1 ? "delete" : "clear"}
                     >
                         <div className="grid grid-cols-2 gap-4">
                             <SkillNameField index={index} />
@@ -406,14 +431,23 @@ function Projects() {
         name: "projects",
     });
 
-    useEffect(() => {
-        if (fields.length === 0) {
-            addProject();
-        }
-    }, [fields, append]);
-
     const addProject = () => {
-        append({ name: "", description: "", url: "", keywords: [] });
+        if (profileFormDefaultValues.projects?.[0]) {
+            append(profileFormDefaultValues.projects[0]);
+        }
+    };
+
+    const handleRemove = (index: number) => {
+        if (fields.length > 1) {
+            remove(index);
+        } else {
+            if (profileFormDefaultValues.projects?.[0]) {
+                form.setValue(
+                    `projects.${index}`,
+                    profileFormDefaultValues.projects[0],
+                );
+            }
+        }
     };
 
     return (
@@ -428,7 +462,8 @@ function Projects() {
                     <ProfileSectionEntry
                         key={field.id}
                         title={`Project ${index + 1}`}
-                        onRemove={() => remove(index)}
+                        onRemove={() => handleRemove(index)}
+                        removeAction={fields.length > 1 ? "delete" : "clear"}
                     >
                         <ProjectNameField index={index} />
                         <ProjectDescriptionField index={index} />
@@ -457,14 +492,23 @@ function Certifications() {
         name: "certificates",
     });
 
-    useEffect(() => {
-        if (fields.length === 0) {
-            addCertification();
-        }
-    }, [fields, append]);
-
     const addCertification = () => {
-        append({ name: "", date: "", issuer: "", url: "" });
+        if (profileFormDefaultValues.certificates?.[0]) {
+            append(profileFormDefaultValues.certificates[0]);
+        }
+    };
+
+    const handleRemove = (index: number) => {
+        if (fields.length > 1) {
+            remove(index);
+        } else {
+            if (profileFormDefaultValues.certificates?.[0]) {
+                form.setValue(
+                    `certificates.${index}`,
+                    profileFormDefaultValues.certificates[0],
+                );
+            }
+        }
     };
 
     return (
@@ -479,7 +523,8 @@ function Certifications() {
                     <ProfileSectionEntry
                         key={field.id}
                         title={`Certification ${index + 1}`}
-                        onRemove={() => remove(index)}
+                        onRemove={() => handleRemove(index)}
+                        removeAction={fields.length > 1 ? "delete" : "clear"}
                     >
                         <div className="grid grid-cols-2 gap-4">
                             <CertificationNameField index={index} />
@@ -513,14 +558,23 @@ function Awards() {
         name: "awards",
     });
 
-    useEffect(() => {
-        if (fields.length === 0) {
-            addAward();
-        }
-    }, [fields, append]);
-
     const addAward = () => {
-        append({ title: "", date: "", awarder: "", summary: "" });
+        if (profileFormDefaultValues.awards?.[0]) {
+            append(profileFormDefaultValues.awards[0]);
+        }
+    };
+
+    const handleRemove = (index: number) => {
+        if (fields.length > 1) {
+            remove(index);
+        } else {
+            if (profileFormDefaultValues.awards?.[0]) {
+                form.setValue(
+                    `awards.${index}`,
+                    profileFormDefaultValues.awards[0],
+                );
+            }
+        }
     };
 
     return (
@@ -535,7 +589,8 @@ function Awards() {
                     <ProfileSectionEntry
                         key={field.id}
                         title={`Award ${index + 1}`}
-                        onRemove={() => remove(index)}
+                        onRemove={() => handleRemove(index)}
+                        removeAction={fields.length > 1 ? "delete" : "clear"}
                     >
                         <div className="grid grid-cols-2 gap-4">
                             <AwardTitleField index={index} />
@@ -565,14 +620,23 @@ function Interests() {
         name: "interests",
     });
 
-    useEffect(() => {
-        if (fields.length === 0) {
-            addInterest();
-        }
-    }, [fields, append]);
-
     const addInterest = () => {
-        append({ name: "", keywords: [] });
+        if (profileFormDefaultValues.interests?.[0]) {
+            append(profileFormDefaultValues.interests[0]);
+        }
+    };
+
+    const handleRemove = (index: number) => {
+        if (fields.length > 1) {
+            remove(index);
+        } else {
+            if (profileFormDefaultValues.interests?.[0]) {
+                form.setValue(
+                    `interests.${index}`,
+                    profileFormDefaultValues.interests[0],
+                );
+            }
+        }
     };
 
     return (
@@ -587,7 +651,8 @@ function Interests() {
                     <ProfileSectionEntry
                         key={field.id}
                         title={`Interest ${index + 1}`}
-                        onRemove={() => remove(index)}
+                        onRemove={() => handleRemove(index)}
+                        removeAction={fields.length > 1 ? "delete" : "clear"}
                     >
                         <InterestNameField index={index} />
                         <InterestKeywordsField index={index} />
@@ -611,14 +676,23 @@ function Languages() {
         name: "languages",
     });
 
-    useEffect(() => {
-        if (fields.length === 0) {
-            addLanguage();
-        }
-    }, [fields, append]);
-
     const addLanguage = () => {
-        append({ language: "", fluency: "" });
+        if (profileFormDefaultValues.languages?.[0]) {
+            append(profileFormDefaultValues.languages[0]);
+        }
+    };
+
+    const handleRemove = (index: number) => {
+        if (fields.length > 1) {
+            remove(index);
+        } else {
+            if (profileFormDefaultValues.languages?.[0]) {
+                form.setValue(
+                    `languages.${index}`,
+                    profileFormDefaultValues.languages[0],
+                );
+            }
+        }
     };
 
     return (
@@ -633,7 +707,8 @@ function Languages() {
                     <ProfileSectionEntry
                         key={field.id}
                         title={`Language ${index + 1}`}
-                        onRemove={() => remove(index)}
+                        onRemove={() => handleRemove(index)}
+                        removeAction={fields.length > 1 ? "delete" : "clear"}
                     >
                         <div className="grid grid-cols-2 gap-4">
                             <LanguageField index={index} />
@@ -659,20 +734,23 @@ function Publications() {
         name: "publications",
     });
 
-    useEffect(() => {
-        if (fields.length === 0) {
-            addPublication();
-        }
-    }, [fields, append]);
-
     const addPublication = () => {
-        append({
-            name: "",
-            publisher: "",
-            releaseDate: "",
-            url: "",
-            summary: "",
-        });
+        if (profileFormDefaultValues.publications?.[0]) {
+            append(profileFormDefaultValues.publications[0]);
+        }
+    };
+
+    const handleRemove = (index: number) => {
+        if (fields.length > 1) {
+            remove(index);
+        } else {
+            if (profileFormDefaultValues.publications?.[0]) {
+                form.setValue(
+                    `publications.${index}`,
+                    profileFormDefaultValues.publications[0],
+                );
+            }
+        }
     };
 
     return (
@@ -687,7 +765,8 @@ function Publications() {
                     <ProfileSectionEntry
                         key={field.id}
                         title={`Publication ${index + 1}`}
-                        onRemove={() => remove(index)}
+                        onRemove={() => handleRemove(index)}
+                        removeAction={fields.length > 1 ? "delete" : "clear"}
                     >
                         <PublicationNameField index={index} />
                         <div className="grid grid-cols-2 gap-4">
@@ -720,21 +799,23 @@ function Volunteer() {
         name: "volunteer",
     });
 
-    useEffect(() => {
-        if (fields.length === 0) {
-            addVolunteer();
-        }
-    }, [fields, append]);
-
     const addVolunteer = () => {
-        append({
-            organization: "",
-            position: "",
-            startDate: "",
-            endDate: "",
-            summary: "",
-            url: "",
-        });
+        if (profileFormDefaultValues.volunteer?.[0]) {
+            append(profileFormDefaultValues.volunteer[0]);
+        }
+    };
+
+    const handleRemove = (index: number) => {
+        if (fields.length > 1) {
+            remove(index);
+        } else {
+            if (profileFormDefaultValues.volunteer?.[0]) {
+                form.setValue(
+                    `volunteer.${index}`,
+                    profileFormDefaultValues.volunteer[0],
+                );
+            }
+        }
     };
 
     return (
@@ -749,7 +830,8 @@ function Volunteer() {
                     <ProfileSectionEntry
                         key={field.id}
                         title={`Volunteer Experience ${index + 1}`}
-                        onRemove={() => remove(index)}
+                        onRemove={() => handleRemove(index)}
+                        removeAction={fields.length > 1 ? "delete" : "clear"}
                     >
                         <div className="grid grid-cols-2 gap-4">
                             <VolunteerPositionField index={index} />
