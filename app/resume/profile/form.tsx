@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { Resume, ResumeSchema } from "@/lib/schema";
@@ -50,43 +50,102 @@ interface ProfileFormProps {
     onNext: (data: Resume) => void;
 }
 
-function PersonalInformation() {
+interface ProfileSectionProps {
+    id: string;
+    title: string;
+    description: string;
+    icon: ReactNode;
+    children: ReactNode;
+}
+
+function ProfileSection({
+    id,
+    title,
+    description,
+    icon,
+    children,
+}: ProfileSectionProps) {
     return (
-        <Card id="personal">
+        <Card id={id} className="py-2">
             <Accordion
                 type="single"
                 collapsible
-                defaultValue="personal"
+                defaultValue={id}
                 className="w-full"
             >
-                <AccordionItem value="personal">
-                    <AccordionTrigger className="px-6 py-4 text-xl font-semibold hover:no-underline">
-                        <div className="flex items-center gap-2">
-                            <User className="h-5 w-5" />
+                <AccordionItem value={id}>
+                    <AccordionTrigger className="[&>svg]:m px-6 py-4 text-xl font-semibold hover:no-underline [&>svg]:size-6">
+                        <div className="flex items-center gap-3">
+                            <div className="grid size-12 place-items-center rounded-full bg-blue-600 text-white">
+                                {icon}
+                            </div>
                             <div className="text-left">
-                                <div>Personal Information</div>
+                                <div>{title}</div>
                                 <div className="text-sm font-normal text-muted-foreground">
-                                    Tell us about yourself
+                                    {description}
                                 </div>
                             </div>
                         </div>
                     </AccordionTrigger>
                     <AccordionContent>
                         <div className="space-y-6 px-6 pt-4 pb-6">
-                            <div className="grid grid-cols-2 gap-6">
-                                <NameField />
-                                <EmailField />
-                                <PhoneField />
-                                <LocationField />
-                                <WebsiteField />
-                                <LinkedInField />
-                                <SummaryField />
-                            </div>
+                            {children}
                         </div>
                     </AccordionContent>
                 </AccordionItem>
             </Accordion>
         </Card>
+    );
+}
+
+interface ProfileSectionEntryProps {
+    title: string;
+    onRemove: () => void;
+    children: ReactNode;
+}
+
+function ProfileSectionEntry({
+    title,
+    onRemove,
+    children,
+}: ProfileSectionEntryProps) {
+    return (
+        <div className="rounded-lg border border-gray-200 bg-gray-50/50 p-4 transition-colors hover:bg-gray-50">
+            <div className="mb-4 flex items-center justify-between">
+                <h3 className="font-medium text-gray-900">{title}</h3>
+                <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={onRemove}
+                    className="text-gray-400 hover:text-red-500"
+                >
+                    <Trash2 className="h-4 w-4" />
+                </Button>
+            </div>
+            <div className="space-y-4">{children}</div>
+        </div>
+    );
+}
+
+function PersonalInformation() {
+    return (
+        <ProfileSection
+            id="personal"
+            title="Personal Information"
+            description="Tell us about yourself"
+            icon={<User className="h-5 w-5" />}
+        >
+            <div className="grid grid-cols-2 gap-6">
+                <NameField />
+                <EmailField />
+                <PhoneField />
+                <LocationField />
+                <WebsiteField />
+                <LinkedInField />
+                <SummaryField />
+            </div>
+        </ProfileSection>
     );
 }
 
@@ -115,143 +174,87 @@ function WorkExperience() {
     };
 
     return (
-        <Card id="work">
-            <Accordion
-                type="single"
-                collapsible
-                defaultValue="work"
-                className="w-full"
-            >
-                <AccordionItem value="work">
-                    <AccordionTrigger className="px-6 py-4 text-xl font-semibold hover:no-underline">
-                        <div className="flex items-center gap-2">
-                            <Building className="h-5 w-5" />
-                            <div className="text-left">
-                                <div>Work Experience</div>
-                                <div className="text-sm font-normal text-muted-foreground">
-                                    Your professional work history
-                                </div>
+        <ProfileSection
+            id="work"
+            title="Work Experience"
+            description="Your professional work history"
+            icon={<Building className="h-5 w-5" />}
+        >
+            <div className="space-y-4">
+                {fields.map((field, index) => (
+                    <ProfileSectionEntry
+                        key={field.id}
+                        title={`Work Experience ${index + 1}`}
+                        onRemove={() => remove(index)}
+                    >
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <Label htmlFor={`work.${index}.position`}>
+                                    Job Title
+                                </Label>
+                                <Input
+                                    id={`work.${index}.position`}
+                                    placeholder="e.g., Senior Software Engineer"
+                                    {...form.register(`work.${index}.position`)}
+                                />
+                            </div>
+                            <div>
+                                <Label htmlFor={`work.${index}.name`}>
+                                    Company
+                                </Label>
+                                <Input
+                                    id={`work.${index}.name`}
+                                    placeholder="e.g., TechCorp Inc."
+                                    {...form.register(`work.${index}.name`)}
+                                />
                             </div>
                         </div>
-                    </AccordionTrigger>
-                    <AccordionContent>
-                        <div className="space-y-6 px-6 pt-4 pb-6">
-                            <div className="space-y-4">
-                                {fields.map((field, index) => (
-                                    <div
-                                        key={field.id}
-                                        className="rounded-lg border border-gray-200 bg-gray-50/50 p-4 transition-colors hover:bg-gray-50"
-                                    >
-                                        <div className="mb-4 flex items-center justify-between">
-                                            <h3 className="font-medium text-gray-900">
-                                                Work Experience {index + 1}
-                                            </h3>
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => remove(index)}
-                                                className="text-gray-400 hover:text-red-500"
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                        <div className="space-y-4">
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <Label
-                                                        htmlFor={`work.${index}.position`}
-                                                    >
-                                                        Job Title
-                                                    </Label>
-                                                    <Input
-                                                        id={`work.${index}.position`}
-                                                        placeholder="e.g., Senior Software Engineer"
-                                                        {...form.register(
-                                                            `work.${index}.position`,
-                                                        )}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <Label
-                                                        htmlFor={`work.${index}.name`}
-                                                    >
-                                                        Company
-                                                    </Label>
-                                                    <Input
-                                                        id={`work.${index}.name`}
-                                                        placeholder="e.g., TechCorp Inc."
-                                                        {...form.register(
-                                                            `work.${index}.name`,
-                                                        )}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <Label
-                                                        htmlFor={`work.${index}.startDate`}
-                                                    >
-                                                        Start Date
-                                                    </Label>
-                                                    <Input
-                                                        id={`work.${index}.startDate`}
-                                                        placeholder="e.g., 2022-01"
-                                                        {...form.register(
-                                                            `work.${index}.startDate`,
-                                                        )}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <Label
-                                                        htmlFor={`work.${index}.endDate`}
-                                                    >
-                                                        End Date
-                                                    </Label>
-                                                    <Input
-                                                        id={`work.${index}.endDate`}
-                                                        placeholder="Present"
-                                                        {...form.register(
-                                                            `work.${index}.endDate`,
-                                                        )}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <Label
-                                                    htmlFor={`work.${index}.summary`}
-                                                >
-                                                    Summary
-                                                </Label>
-                                                <Textarea
-                                                    id={`work.${index}.summary`}
-                                                    placeholder="Describe your key responsibilities and achievements..."
-                                                    rows={4}
-                                                    {...form.register(
-                                                        `work.${index}.summary`,
-                                                    )}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <Label htmlFor={`work.${index}.startDate`}>
+                                    Start Date
+                                </Label>
+                                <Input
+                                    id={`work.${index}.startDate`}
+                                    placeholder="e.g., 2022-01"
+                                    {...form.register(
+                                        `work.${index}.startDate`,
+                                    )}
+                                />
                             </div>
+                            <div>
+                                <Label htmlFor={`work.${index}.endDate`}>
+                                    End Date
+                                </Label>
+                                <Input
+                                    id={`work.${index}.endDate`}
+                                    placeholder="Present"
+                                    {...form.register(`work.${index}.endDate`)}
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <Label htmlFor={`work.${index}.summary`}>
+                                Summary
+                            </Label>
+                            <Textarea
+                                id={`work.${index}.summary`}
+                                placeholder="Describe your key responsibilities and achievements..."
+                                rows={4}
+                                {...form.register(`work.${index}.summary`)}
+                            />
+                        </div>
+                    </ProfileSectionEntry>
+                ))}
+            </div>
 
-                            <div className="flex justify-center">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={addExperience}
-                                >
-                                    <Plus className="mr-2 h-4 w-4" />
-                                    Add Experience
-                                </Button>
-                            </div>
-                        </div>
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
-        </Card>
+            <div className="flex justify-center">
+                <Button type="button" variant="outline" onClick={addExperience}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Experience
+                </Button>
+            </div>
+        </ProfileSection>
     );
 }
 
@@ -281,157 +284,109 @@ function Education() {
     };
 
     return (
-        <Card id="education">
-            <Accordion
-                type="single"
-                collapsible
-                defaultValue="education"
-                className="w-full"
-            >
-                <AccordionItem value="education">
-                    <AccordionTrigger className="px-6 py-4 text-xl font-semibold hover:no-underline">
-                        <div className="flex items-center gap-2">
-                            <GraduationCap className="h-5 w-5" />
-                            <div className="text-left">
-                                <div>Education</div>
-                                <div className="text-sm font-normal text-muted-foreground">
-                                    Your educational background
-                                </div>
+        <ProfileSection
+            id="education"
+            title="Education"
+            description="Your educational background"
+            icon={<GraduationCap className="h-5 w-5" />}
+        >
+            <div className="space-y-4">
+                {fields.map((field, index) => (
+                    <ProfileSectionEntry
+                        key={field.id}
+                        title={`Education ${index + 1}`}
+                        onRemove={() => remove(index)}
+                    >
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <Label htmlFor={`education.${index}.studyType`}>
+                                    Degree Type
+                                </Label>
+                                <Input
+                                    id={`education.${index}.studyType`}
+                                    placeholder="e.g., Bachelor's"
+                                    {...form.register(
+                                        `education.${index}.studyType`,
+                                    )}
+                                />
+                            </div>
+                            <div>
+                                <Label htmlFor={`education.${index}.area`}>
+                                    Field of Study
+                                </Label>
+                                <Input
+                                    id={`education.${index}.area`}
+                                    placeholder="e.g., Computer Science"
+                                    {...form.register(
+                                        `education.${index}.area`,
+                                    )}
+                                />
                             </div>
                         </div>
-                    </AccordionTrigger>
-                    <AccordionContent>
-                        <div className="space-y-6 px-6 pt-4 pb-6">
-                            <div className="space-y-4">
-                                {fields.map((field, index) => (
-                                    <div
-                                        key={field.id}
-                                        className="rounded-lg border border-gray-200 bg-gray-50/50 p-4 transition-colors hover:bg-gray-50"
-                                    >
-                                        <div className="mb-4 flex items-center justify-between">
-                                            <h3 className="font-medium text-gray-900">
-                                                Education {index + 1}
-                                            </h3>
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => remove(index)}
-                                                className="text-gray-400 hover:text-red-500"
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                        <div className="space-y-4">
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <Label
-                                                        htmlFor={`education.${index}.studyType`}
-                                                    >
-                                                        Degree Type
-                                                    </Label>
-                                                    <Input
-                                                        id={`education.${index}.studyType`}
-                                                        placeholder="e.g., Bachelor's"
-                                                        {...form.register(
-                                                            `education.${index}.studyType`,
-                                                        )}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <Label
-                                                        htmlFor={`education.${index}.area`}
-                                                    >
-                                                        Field of Study
-                                                    </Label>
-                                                    <Input
-                                                        id={`education.${index}.area`}
-                                                        placeholder="e.g., Computer Science"
-                                                        {...form.register(
-                                                            `education.${index}.area`,
-                                                        )}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <Label
-                                                        htmlFor={`education.${index}.institution`}
-                                                    >
-                                                        Institution
-                                                    </Label>
-                                                    <Input
-                                                        id={`education.${index}.institution`}
-                                                        placeholder="e.g., University of Technology"
-                                                        {...form.register(
-                                                            `education.${index}.institution`,
-                                                        )}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <Label
-                                                        htmlFor={`education.${index}.score`}
-                                                    >
-                                                        GPA (Optional)
-                                                    </Label>
-                                                    <Input
-                                                        id={`education.${index}.score`}
-                                                        placeholder="e.g., 3.8"
-                                                        {...form.register(
-                                                            `education.${index}.score`,
-                                                        )}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <Label
-                                                        htmlFor={`education.${index}.startDate`}
-                                                    >
-                                                        Start Date
-                                                    </Label>
-                                                    <Input
-                                                        id={`education.${index}.startDate`}
-                                                        placeholder="e.g., 2018-09"
-                                                        {...form.register(
-                                                            `education.${index}.startDate`,
-                                                        )}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <Label
-                                                        htmlFor={`education.${index}.endDate`}
-                                                    >
-                                                        End Date
-                                                    </Label>
-                                                    <Input
-                                                        id={`education.${index}.endDate`}
-                                                        placeholder="e.g., 2022-05"
-                                                        {...form.register(
-                                                            `education.${index}.endDate`,
-                                                        )}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="flex justify-center">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={addEducation}
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <Label
+                                    htmlFor={`education.${index}.institution`}
                                 >
-                                    <Plus className="mr-2 h-4 w-4" />
-                                    Add Education
-                                </Button>
+                                    Institution
+                                </Label>
+                                <Input
+                                    id={`education.${index}.institution`}
+                                    placeholder="e.g., University of Technology"
+                                    {...form.register(
+                                        `education.${index}.institution`,
+                                    )}
+                                />
+                            </div>
+                            <div>
+                                <Label htmlFor={`education.${index}.score`}>
+                                    GPA (Optional)
+                                </Label>
+                                <Input
+                                    id={`education.${index}.score`}
+                                    placeholder="e.g., 3.8"
+                                    {...form.register(
+                                        `education.${index}.score`,
+                                    )}
+                                />
                             </div>
                         </div>
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
-        </Card>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <Label htmlFor={`education.${index}.startDate`}>
+                                    Start Date
+                                </Label>
+                                <Input
+                                    id={`education.${index}.startDate`}
+                                    placeholder="e.g., 2018-09"
+                                    {...form.register(
+                                        `education.${index}.startDate`,
+                                    )}
+                                />
+                            </div>
+                            <div>
+                                <Label htmlFor={`education.${index}.endDate`}>
+                                    End Date
+                                </Label>
+                                <Input
+                                    id={`education.${index}.endDate`}
+                                    placeholder="e.g., 2022-05"
+                                    {...form.register(
+                                        `education.${index}.endDate`,
+                                    )}
+                                />
+                            </div>
+                        </div>
+                    </ProfileSectionEntry>
+                ))}
+            </div>
+            <div className="flex justify-center">
+                <Button type="button" variant="outline" onClick={addEducation}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Education
+                </Button>
+            </div>
+        </ProfileSection>
     );
 }
 
@@ -453,111 +408,61 @@ function Skills() {
     };
 
     return (
-        <Card id="skills">
-            <Accordion
-                type="single"
-                collapsible
-                defaultValue="skills"
-                className="w-full"
-            >
-                <AccordionItem value="skills">
-                    <AccordionTrigger className="px-6 py-4 text-xl font-semibold hover:no-underline">
-                        <div className="flex items-center gap-2">
-                            <Code className="h-5 w-5" />
-                            <div className="text-left">
-                                <div>Skills</div>
-                                <div className="text-sm font-normal text-muted-foreground">
-                                    Your technical and professional skills
-                                </div>
+        <ProfileSection
+            id="skills"
+            title="Skills"
+            description="Your technical and professional skills"
+            icon={<Code className="h-5 w-5" />}
+        >
+            <div className="space-y-4">
+                {fields.map((field, index) => (
+                    <ProfileSectionEntry
+                        key={field.id}
+                        title={`Skill ${index + 1}`}
+                        onRemove={() => remove(index)}
+                    >
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <Label htmlFor={`skills.${index}.name`}>
+                                    Skill Name
+                                </Label>
+                                <Input
+                                    id={`skills.${index}.name`}
+                                    placeholder="e.g., JavaScript"
+                                    {...form.register(`skills.${index}.name`)}
+                                />
+                            </div>
+                            <div>
+                                <Label htmlFor={`skills.${index}.level`}>
+                                    Proficiency Level
+                                </Label>
+                                <Input
+                                    id={`skills.${index}.level`}
+                                    placeholder="e.g., Advanced, Intermediate"
+                                    {...form.register(`skills.${index}.level`)}
+                                />
                             </div>
                         </div>
-                    </AccordionTrigger>
-                    <AccordionContent>
-                        <div className="space-y-6 px-6 pt-4 pb-6">
-                            <div className="space-y-4">
-                                {fields.map((field, index) => (
-                                    <div
-                                        key={field.id}
-                                        className="rounded-lg border border-gray-200 bg-gray-50/50 p-4 transition-colors hover:bg-gray-50"
-                                    >
-                                        <div className="mb-4 flex items-center justify-between">
-                                            <h3 className="font-medium text-gray-900">
-                                                Skill {index + 1}
-                                            </h3>
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => remove(index)}
-                                                className="text-gray-400 hover:text-red-500"
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                        <div className="space-y-4">
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <Label
-                                                        htmlFor={`skills.${index}.name`}
-                                                    >
-                                                        Skill Name
-                                                    </Label>
-                                                    <Input
-                                                        id={`skills.${index}.name`}
-                                                        placeholder="e.g., JavaScript"
-                                                        {...form.register(
-                                                            `skills.${index}.name`,
-                                                        )}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <Label
-                                                        htmlFor={`skills.${index}.level`}
-                                                    >
-                                                        Proficiency Level
-                                                    </Label>
-                                                    <Input
-                                                        id={`skills.${index}.level`}
-                                                        placeholder="e.g., Advanced, Intermediate"
-                                                        {...form.register(
-                                                            `skills.${index}.level`,
-                                                        )}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <Label
-                                                    htmlFor={`skills.${index}.keywords`}
-                                                >
-                                                    Keywords (Optional)
-                                                </Label>
-                                                <Input
-                                                    id={`skills.${index}.keywords`}
-                                                    placeholder="e.g., React, Node.js, TypeScript (comma separated)"
-                                                    {...form.register(
-                                                        `skills.${index}.keywords`,
-                                                    )}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="flex justify-center">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={addSkill}
-                                >
-                                    <Plus className="mr-2 h-4 w-4" />
-                                    Add Skill
-                                </Button>
-                            </div>
+                        <div>
+                            <Label htmlFor={`skills.${index}.keywords`}>
+                                Keywords (Optional)
+                            </Label>
+                            <Input
+                                id={`skills.${index}.keywords`}
+                                placeholder="e.g., React, Node.js, TypeScript (comma separated)"
+                                {...form.register(`skills.${index}.keywords`)}
+                            />
                         </div>
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
-        </Card>
+                    </ProfileSectionEntry>
+                ))}
+            </div>
+            <div className="flex justify-center">
+                <Button type="button" variant="outline" onClick={addSkill}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Skill
+                </Button>
+            </div>
+        </ProfileSection>
     );
 }
 
@@ -579,140 +484,88 @@ function Projects() {
     };
 
     return (
-        <Card id="projects">
-            <Accordion
-                type="single"
-                collapsible
-                defaultValue="projects"
-                className="w-full"
-            >
-                <AccordionItem value="projects">
-                    <AccordionTrigger className="px-6 py-4 text-xl font-semibold hover:no-underline">
-                        <div className="flex items-center gap-2">
-                            <Code className="h-5 w-5" />
-                            <div className="text-left">
-                                <div>Projects</div>
-                                <div className="text-sm font-normal text-muted-foreground">
-                                    Your notable projects and contributions
-                                </div>
+        <ProfileSection
+            id="projects"
+            title="Projects"
+            description="Your notable projects and contributions"
+            icon={<Code className="h-5 w-5" />}
+        >
+            <div className="space-y-4">
+                {fields.map((field, index) => (
+                    <ProfileSectionEntry
+                        key={field.id}
+                        title={`Project ${index + 1}`}
+                        onRemove={() => remove(index)}
+                    >
+                        <div>
+                            <Label htmlFor={`projects.${index}.name`}>
+                                Project Name
+                            </Label>
+                            <Input
+                                id={`projects.${index}.name`}
+                                placeholder="e.g., E-commerce Platform"
+                                {...form.register(`projects.${index}.name`)}
+                            />
+                        </div>
+                        <div>
+                            <Label htmlFor={`projects.${index}.description`}>
+                                Description
+                            </Label>
+                            <Textarea
+                                id={`projects.${index}.description`}
+                                placeholder="Describe the project..."
+                                rows={3}
+                                {...form.register(
+                                    `projects.${index}.description`,
+                                )}
+                            />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <Label htmlFor={`projects.${index}.startDate`}>
+                                    Start Date
+                                </Label>
+                                <Input
+                                    id={`projects.${index}.startDate`}
+                                    placeholder="e.g., 2023-01"
+                                    {...form.register(
+                                        `projects.${index}.startDate`,
+                                    )}
+                                />
+                            </div>
+                            <div>
+                                <Label htmlFor={`projects.${index}.endDate`}>
+                                    End Date
+                                </Label>
+                                <Input
+                                    id={`projects.${index}.endDate`}
+                                    placeholder="e.g., 2023-06"
+                                    {...form.register(
+                                        `projects.${index}.endDate`,
+                                    )}
+                                />
                             </div>
                         </div>
-                    </AccordionTrigger>
-                    <AccordionContent>
-                        <div className="space-y-6 px-6 pt-4 pb-6">
-                            <div className="space-y-4">
-                                {fields.map((field, index) => (
-                                    <div
-                                        key={field.id}
-                                        className="rounded-lg border border-gray-200 bg-gray-50/50 p-4 transition-colors hover:bg-gray-50"
-                                    >
-                                        <div className="mb-4 flex items-center justify-between">
-                                            <h3 className="font-medium text-gray-900">
-                                                Project {index + 1}
-                                            </h3>
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => remove(index)}
-                                                className="text-gray-400 hover:text-red-500"
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                        <div className="space-y-4">
-                                            <div>
-                                                <Label
-                                                    htmlFor={`projects.${index}.name`}
-                                                >
-                                                    Project Name
-                                                </Label>
-                                                <Input
-                                                    id={`projects.${index}.name`}
-                                                    placeholder="e.g., E-commerce Platform"
-                                                    {...form.register(
-                                                        `projects.${index}.name`,
-                                                    )}
-                                                />
-                                            </div>
-                                            <div>
-                                                <Label
-                                                    htmlFor={`projects.${index}.description`}
-                                                >
-                                                    Description
-                                                </Label>
-                                                <Textarea
-                                                    id={`projects.${index}.description`}
-                                                    placeholder="Describe the project..."
-                                                    rows={3}
-                                                    {...form.register(
-                                                        `projects.${index}.description`,
-                                                    )}
-                                                />
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <Label
-                                                        htmlFor={`projects.${index}.startDate`}
-                                                    >
-                                                        Start Date
-                                                    </Label>
-                                                    <Input
-                                                        id={`projects.${index}.startDate`}
-                                                        placeholder="e.g., 2023-01"
-                                                        {...form.register(
-                                                            `projects.${index}.startDate`,
-                                                        )}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <Label
-                                                        htmlFor={`projects.${index}.endDate`}
-                                                    >
-                                                        End Date
-                                                    </Label>
-                                                    <Input
-                                                        id={`projects.${index}.endDate`}
-                                                        placeholder="e.g., 2023-06"
-                                                        {...form.register(
-                                                            `projects.${index}.endDate`,
-                                                        )}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <Label
-                                                    htmlFor={`projects.${index}.url`}
-                                                >
-                                                    Project URL (Optional)
-                                                </Label>
-                                                <Input
-                                                    id={`projects.${index}.url`}
-                                                    placeholder="https://github.com/username/project"
-                                                    {...form.register(
-                                                        `projects.${index}.url`,
-                                                    )}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="flex justify-center">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={addProject}
-                                >
-                                    <Plus className="mr-2 h-4 w-4" />
-                                    Add Project
-                                </Button>
-                            </div>
+                        <div>
+                            <Label htmlFor={`projects.${index}.url`}>
+                                Project URL (Optional)
+                            </Label>
+                            <Input
+                                id={`projects.${index}.url`}
+                                placeholder="https://github.com/username/project"
+                                {...form.register(`projects.${index}.url`)}
+                            />
                         </div>
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
-        </Card>
+                    </ProfileSectionEntry>
+                ))}
+            </div>
+            <div className="flex justify-center">
+                <Button type="button" variant="outline" onClick={addProject}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Project
+                </Button>
+            </div>
+        </ProfileSection>
     );
 }
 
@@ -734,128 +587,85 @@ function Certifications() {
     };
 
     return (
-        <Card id="certificates">
-            <Accordion
-                type="single"
-                collapsible
-                defaultValue="certificates"
-                className="w-full"
-            >
-                <AccordionItem value="certificates">
-                    <AccordionTrigger className="px-6 py-4 text-xl font-semibold hover:no-underline">
-                        <div className="flex items-center gap-2">
-                            <Award className="h-5 w-5" />
-                            <div className="text-left">
-                                <div>Certifications</div>
-                                <div className="text-sm font-normal text-muted-foreground">
-                                    Your professional certifications
-                                </div>
+        <ProfileSection
+            id="certificates"
+            title="Certifications"
+            description="Your professional certifications"
+            icon={<Award className="h-5 w-5" />}
+        >
+            <div className="space-y-4">
+                {fields.map((field, index) => (
+                    <ProfileSectionEntry
+                        key={field.id}
+                        title={`Certification ${index + 1}`}
+                        onRemove={() => remove(index)}
+                    >
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <Label htmlFor={`certificates.${index}.name`}>
+                                    Certification Name
+                                </Label>
+                                <Input
+                                    id={`certificates.${index}.name`}
+                                    placeholder="e.g., AWS Certified Solutions Architect"
+                                    {...form.register(
+                                        `certificates.${index}.name`,
+                                    )}
+                                />
+                            </div>
+                            <div>
+                                <Label htmlFor={`certificates.${index}.issuer`}>
+                                    Issuing Organization
+                                </Label>
+                                <Input
+                                    id={`certificates.${index}.issuer`}
+                                    placeholder="e.g., Amazon Web Services"
+                                    {...form.register(
+                                        `certificates.${index}.issuer`,
+                                    )}
+                                />
                             </div>
                         </div>
-                    </AccordionTrigger>
-                    <AccordionContent>
-                        <div className="space-y-6 px-6 pt-4 pb-6">
-                            <div className="space-y-4">
-                                {fields.map((field, index) => (
-                                    <div
-                                        key={field.id}
-                                        className="rounded-lg border border-gray-200 bg-gray-50/50 p-4 transition-colors hover:bg-gray-50"
-                                    >
-                                        <div className="mb-4 flex items-center justify-between">
-                                            <h3 className="font-medium text-gray-900">
-                                                Certification {index + 1}
-                                            </h3>
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => remove(index)}
-                                                className="text-gray-400 hover:text-red-500"
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                        <div className="space-y-4">
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <Label
-                                                        htmlFor={`certificates.${index}.name`}
-                                                    >
-                                                        Certification Name
-                                                    </Label>
-                                                    <Input
-                                                        id={`certificates.${index}.name`}
-                                                        placeholder="e.g., AWS Certified Solutions Architect"
-                                                        {...form.register(
-                                                            `certificates.${index}.name`,
-                                                        )}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <Label
-                                                        htmlFor={`certificates.${index}.issuer`}
-                                                    >
-                                                        Issuing Organization
-                                                    </Label>
-                                                    <Input
-                                                        id={`certificates.${index}.issuer`}
-                                                        placeholder="e.g., Amazon Web Services"
-                                                        {...form.register(
-                                                            `certificates.${index}.issuer`,
-                                                        )}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <Label
-                                                        htmlFor={`certificates.${index}.date`}
-                                                    >
-                                                        Date Earned
-                                                    </Label>
-                                                    <Input
-                                                        id={`certificates.${index}.date`}
-                                                        placeholder="e.g., 2023-03"
-                                                        {...form.register(
-                                                            `certificates.${index}.date`,
-                                                        )}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <Label
-                                                        htmlFor={`certificates.${index}.url`}
-                                                    >
-                                                        Certificate URL
-                                                        (Optional)
-                                                    </Label>
-                                                    <Input
-                                                        id={`certificates.${index}.url`}
-                                                        placeholder="https://credly.com/badges/..."
-                                                        {...form.register(
-                                                            `certificates.${index}.url`,
-                                                        )}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <Label htmlFor={`certificates.${index}.date`}>
+                                    Date Earned
+                                </Label>
+                                <Input
+                                    id={`certificates.${index}.date`}
+                                    placeholder="e.g., 2023-03"
+                                    {...form.register(
+                                        `certificates.${index}.date`,
+                                    )}
+                                />
                             </div>
-                            <div className="flex justify-center">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={addCertification}
-                                >
-                                    <Plus className="mr-2 h-4 w-4" />
-                                    Add Certification
-                                </Button>
+                            <div>
+                                <Label htmlFor={`certificates.${index}.url`}>
+                                    Certificate URL (Optional)
+                                </Label>
+                                <Input
+                                    id={`certificates.${index}.url`}
+                                    placeholder="https://credly.com/badges/..."
+                                    {...form.register(
+                                        `certificates.${index}.url`,
+                                    )}
+                                />
                             </div>
                         </div>
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
-        </Card>
+                    </ProfileSectionEntry>
+                ))}
+            </div>
+            <div className="flex justify-center">
+                <Button
+                    type="button"
+                    variant="outline"
+                    onClick={addCertification}
+                >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Certification
+                </Button>
+            </div>
+        </ProfileSection>
     );
 }
 
@@ -877,128 +687,76 @@ function Awards() {
     };
 
     return (
-        <Card id="awards">
-            <Accordion
-                type="single"
-                collapsible
-                defaultValue="awards"
-                className="w-full"
-            >
-                <AccordionItem value="awards">
-                    <AccordionTrigger className="px-6 py-4 text-xl font-semibold hover:no-underline">
-                        <div className="flex items-center gap-2">
-                            <Award className="h-5 w-5" />
-                            <div className="text-left">
-                                <div>Awards</div>
-                                <div className="text-sm font-normal text-muted-foreground">
-                                    Your achievements and recognitions
-                                </div>
+        <ProfileSection
+            id="awards"
+            title="Awards"
+            description="Your achievements and recognitions"
+            icon={<Award className="h-5 w-5" />}
+        >
+            <div className="space-y-4">
+                {fields.map((field, index) => (
+                    <ProfileSectionEntry
+                        key={field.id}
+                        title={`Award ${index + 1}`}
+                        onRemove={() => remove(index)}
+                    >
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <Label htmlFor={`awards.${index}.title`}>
+                                    Award Title
+                                </Label>
+                                <Input
+                                    id={`awards.${index}.title`}
+                                    placeholder="e.g., Employee of the Year"
+                                    {...form.register(`awards.${index}.title`)}
+                                />
+                            </div>
+                            <div>
+                                <Label htmlFor={`awards.${index}.awarder`}>
+                                    Awarding Organization
+                                </Label>
+                                <Input
+                                    id={`awards.${index}.awarder`}
+                                    placeholder="e.g., TechCorp Inc."
+                                    {...form.register(
+                                        `awards.${index}.awarder`,
+                                    )}
+                                />
                             </div>
                         </div>
-                    </AccordionTrigger>
-                    <AccordionContent>
-                        <div className="space-y-6 px-6 pt-4 pb-6">
-                            <div className="space-y-4">
-                                {fields.map((field, index) => (
-                                    <div
-                                        key={field.id}
-                                        className="rounded-lg border border-gray-200 bg-gray-50/50 p-4 transition-colors hover:bg-gray-50"
-                                    >
-                                        <div className="mb-4 flex items-center justify-between">
-                                            <h3 className="font-medium text-gray-900">
-                                                Award {index + 1}
-                                            </h3>
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => remove(index)}
-                                                className="text-gray-400 hover:text-red-500"
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                        <div className="space-y-4">
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <Label
-                                                        htmlFor={`awards.${index}.title`}
-                                                    >
-                                                        Award Title
-                                                    </Label>
-                                                    <Input
-                                                        id={`awards.${index}.title`}
-                                                        placeholder="e.g., Employee of the Year"
-                                                        {...form.register(
-                                                            `awards.${index}.title`,
-                                                        )}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <Label
-                                                        htmlFor={`awards.${index}.awarder`}
-                                                    >
-                                                        Awarding Organization
-                                                    </Label>
-                                                    <Input
-                                                        id={`awards.${index}.awarder`}
-                                                        placeholder="e.g., TechCorp Inc."
-                                                        {...form.register(
-                                                            `awards.${index}.awarder`,
-                                                        )}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <Label
-                                                        htmlFor={`awards.${index}.date`}
-                                                    >
-                                                        Date Received
-                                                    </Label>
-                                                    <Input
-                                                        id={`awards.${index}.date`}
-                                                        placeholder="e.g., 2023-12"
-                                                        {...form.register(
-                                                            `awards.${index}.date`,
-                                                        )}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <Label
-                                                    htmlFor={`awards.${index}.summary`}
-                                                >
-                                                    Description
-                                                </Label>
-                                                <Textarea
-                                                    id={`awards.${index}.summary`}
-                                                    placeholder="Describe the award and its significance..."
-                                                    rows={3}
-                                                    {...form.register(
-                                                        `awards.${index}.summary`,
-                                                    )}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="flex justify-center">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={addAward}
-                                >
-                                    <Plus className="mr-2 h-4 w-4" />
-                                    Add Award
-                                </Button>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <Label htmlFor={`awards.${index}.date`}>
+                                    Date Received
+                                </Label>
+                                <Input
+                                    id={`awards.${index}.date`}
+                                    placeholder="e.g., 2023-12"
+                                    {...form.register(`awards.${index}.date`)}
+                                />
                             </div>
                         </div>
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
-        </Card>
+                        <div>
+                            <Label htmlFor={`awards.${index}.summary`}>
+                                Description
+                            </Label>
+                            <Textarea
+                                id={`awards.${index}.summary`}
+                                placeholder="Describe the award and its significance..."
+                                rows={3}
+                                {...form.register(`awards.${index}.summary`)}
+                            />
+                        </div>
+                    </ProfileSectionEntry>
+                ))}
+            </div>
+            <div className="flex justify-center">
+                <Button type="button" variant="outline" onClick={addAward}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Award
+                </Button>
+            </div>
+        </ProfileSection>
     );
 }
 
@@ -1020,95 +778,51 @@ function Interests() {
     };
 
     return (
-        <Card id="interests">
-            <Accordion
-                type="single"
-                collapsible
-                defaultValue="interests"
-                className="w-full"
-            >
-                <AccordionItem value="interests">
-                    <AccordionTrigger className="px-6 py-4 text-xl font-semibold hover:no-underline">
-                        <div className="flex items-center gap-2">
-                            <Heart className="h-5 w-5" />
-                            <div className="text-left">
-                                <div>Interests</div>
-                                <div className="text-sm font-normal text-muted-foreground">
-                                    Your hobbies and personal interests
-                                </div>
-                            </div>
+        <ProfileSection
+            id="interests"
+            title="Interests"
+            description="Your hobbies and personal interests"
+            icon={<Heart className="h-5 w-5" />}
+        >
+            <div className="space-y-4">
+                {fields.map((field, index) => (
+                    <ProfileSectionEntry
+                        key={field.id}
+                        title={`Interest ${index + 1}`}
+                        onRemove={() => remove(index)}
+                    >
+                        <div>
+                            <Label htmlFor={`interests.${index}.name`}>
+                                Interest Name
+                            </Label>
+                            <Input
+                                id={`interests.${index}.name`}
+                                placeholder="e.g., Photography"
+                                {...form.register(`interests.${index}.name`)}
+                            />
                         </div>
-                    </AccordionTrigger>
-                    <AccordionContent>
-                        <div className="space-y-6 px-6 pt-4 pb-6">
-                            <div className="space-y-4">
-                                {fields.map((field, index) => (
-                                    <div
-                                        key={field.id}
-                                        className="rounded-lg border border-gray-200 bg-gray-50/50 p-4 transition-colors hover:bg-gray-50"
-                                    >
-                                        <div className="mb-4 flex items-center justify-between">
-                                            <h3 className="font-medium text-gray-900">
-                                                Interest {index + 1}
-                                            </h3>
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => remove(index)}
-                                                className="text-gray-400 hover:text-red-500"
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                        <div className="space-y-4">
-                                            <div>
-                                                <Label
-                                                    htmlFor={`interests.${index}.name`}
-                                                >
-                                                    Interest Name
-                                                </Label>
-                                                <Input
-                                                    id={`interests.${index}.name`}
-                                                    placeholder="e.g., Photography"
-                                                    {...form.register(
-                                                        `interests.${index}.name`,
-                                                    )}
-                                                />
-                                            </div>
-                                            <div>
-                                                <Label
-                                                    htmlFor={`interests.${index}.keywords`}
-                                                >
-                                                    Keywords
-                                                </Label>
-                                                <Input
-                                                    id={`interests.${index}.keywords`}
-                                                    placeholder="e.g., landscape, portrait, digital (comma separated)"
-                                                    {...form.register(
-                                                        `interests.${index}.keywords`,
-                                                    )}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="flex justify-center">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={addInterest}
-                                >
-                                    <Plus className="mr-2 h-4 w-4" />
-                                    Add Interest
-                                </Button>
-                            </div>
+                        <div>
+                            <Label htmlFor={`interests.${index}.keywords`}>
+                                Keywords
+                            </Label>
+                            <Input
+                                id={`interests.${index}.keywords`}
+                                placeholder="e.g., landscape, portrait, digital (comma separated)"
+                                {...form.register(
+                                    `interests.${index}.keywords`,
+                                )}
+                            />
                         </div>
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
-        </Card>
+                    </ProfileSectionEntry>
+                ))}
+            </div>
+            <div className="flex justify-center">
+                <Button type="button" variant="outline" onClick={addInterest}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Interest
+                </Button>
+            </div>
+        </ProfileSection>
     );
 }
 
@@ -1130,97 +844,55 @@ function Languages() {
     };
 
     return (
-        <Card id="languages">
-            <Accordion
-                type="single"
-                collapsible
-                defaultValue="languages"
-                className="w-full"
-            >
-                <AccordionItem value="languages">
-                    <AccordionTrigger className="px-6 py-4 text-xl font-semibold hover:no-underline">
-                        <div className="flex items-center gap-2">
-                            <LanguagesIcon className="h-5 w-5" />
-                            <div className="text-left">
-                                <div>Languages</div>
-                                <div className="text-sm font-normal text-muted-foreground">
-                                    Languages you speak and proficiency levels
-                                </div>
+        <ProfileSection
+            id="languages"
+            title="Languages"
+            description="Languages you speak and proficiency levels"
+            icon={<LanguagesIcon className="h-5 w-5" />}
+        >
+            <div className="space-y-4">
+                {fields.map((field, index) => (
+                    <ProfileSectionEntry
+                        key={field.id}
+                        title={`Language ${index + 1}`}
+                        onRemove={() => remove(index)}
+                    >
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <Label htmlFor={`languages.${index}.language`}>
+                                    Language
+                                </Label>
+                                <Input
+                                    id={`languages.${index}.language`}
+                                    placeholder="e.g., Spanish"
+                                    {...form.register(
+                                        `languages.${index}.language`,
+                                    )}
+                                />
+                            </div>
+                            <div>
+                                <Label htmlFor={`languages.${index}.fluency`}>
+                                    Proficiency Level
+                                </Label>
+                                <Input
+                                    id={`languages.${index}.fluency`}
+                                    placeholder="e.g., Fluent, Intermediate, Basic"
+                                    {...form.register(
+                                        `languages.${index}.fluency`,
+                                    )}
+                                />
                             </div>
                         </div>
-                    </AccordionTrigger>
-                    <AccordionContent>
-                        <div className="space-y-6 px-6 pt-4 pb-6">
-                            <div className="space-y-4">
-                                {fields.map((field, index) => (
-                                    <div
-                                        key={field.id}
-                                        className="rounded-lg border border-gray-200 bg-gray-50/50 p-4 transition-colors hover:bg-gray-50"
-                                    >
-                                        <div className="mb-4 flex items-center justify-between">
-                                            <h3 className="font-medium text-gray-900">
-                                                Language {index + 1}
-                                            </h3>
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => remove(index)}
-                                                className="text-gray-400 hover:text-red-500"
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                        <div className="space-y-4">
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <Label
-                                                        htmlFor={`languages.${index}.language`}
-                                                    >
-                                                        Language
-                                                    </Label>
-                                                    <Input
-                                                        id={`languages.${index}.language`}
-                                                        placeholder="e.g., Spanish"
-                                                        {...form.register(
-                                                            `languages.${index}.language`,
-                                                        )}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <Label
-                                                        htmlFor={`languages.${index}.fluency`}
-                                                    >
-                                                        Proficiency Level
-                                                    </Label>
-                                                    <Input
-                                                        id={`languages.${index}.fluency`}
-                                                        placeholder="e.g., Fluent, Intermediate, Basic"
-                                                        {...form.register(
-                                                            `languages.${index}.fluency`,
-                                                        )}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="flex justify-center">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={addLanguage}
-                                >
-                                    <Plus className="mr-2 h-4 w-4" />
-                                    Add Language
-                                </Button>
-                            </div>
-                        </div>
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
-        </Card>
+                    </ProfileSectionEntry>
+                ))}
+            </div>
+            <div className="flex justify-center">
+                <Button type="button" variant="outline" onClick={addLanguage}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Language
+                </Button>
+            </div>
+        </ProfileSection>
     );
 }
 
@@ -1248,140 +920,96 @@ function Publications() {
     };
 
     return (
-        <Card id="publications">
-            <Accordion
-                type="single"
-                collapsible
-                defaultValue="publications"
-                className="w-full"
-            >
-                <AccordionItem value="publications">
-                    <AccordionTrigger className="px-6 py-4 text-xl font-semibold hover:no-underline">
-                        <div className="flex items-center gap-2">
-                            <FileText className="h-5 w-5" />
-                            <div className="text-left">
-                                <div>Publications</div>
-                                <div className="text-sm font-normal text-muted-foreground">
-                                    Your published works and papers
-                                </div>
-                            </div>
+        <ProfileSection
+            id="publications"
+            title="Publications"
+            description="Your published works and papers"
+            icon={<FileText className="h-5 w-5" />}
+        >
+            <div className="space-y-4">
+                {fields.map((field, index) => (
+                    <ProfileSectionEntry
+                        key={field.id}
+                        title={`Publication ${index + 1}`}
+                        onRemove={() => remove(index)}
+                    >
+                        <div>
+                            <Label htmlFor={`publications.${index}.name`}>
+                                Publication Title
+                            </Label>
+                            <Input
+                                id={`publications.${index}.name`}
+                                placeholder="e.g., Advanced React Patterns"
+                                {...form.register(`publications.${index}.name`)}
+                            />
                         </div>
-                    </AccordionTrigger>
-                    <AccordionContent>
-                        <div className="space-y-6 px-6 pt-4 pb-6">
-                            <div className="space-y-4">
-                                {fields.map((field, index) => (
-                                    <div
-                                        key={field.id}
-                                        className="rounded-lg border border-gray-200 bg-gray-50/50 p-4 transition-colors hover:bg-gray-50"
-                                    >
-                                        <div className="mb-4 flex items-center justify-between">
-                                            <h3 className="font-medium text-gray-900">
-                                                Publication {index + 1}
-                                            </h3>
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => remove(index)}
-                                                className="text-gray-400 hover:text-red-500"
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                        <div className="space-y-4">
-                                            <div>
-                                                <Label
-                                                    htmlFor={`publications.${index}.name`}
-                                                >
-                                                    Publication Title
-                                                </Label>
-                                                <Input
-                                                    id={`publications.${index}.name`}
-                                                    placeholder="e.g., Advanced React Patterns"
-                                                    {...form.register(
-                                                        `publications.${index}.name`,
-                                                    )}
-                                                />
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <Label
-                                                        htmlFor={`publications.${index}.publisher`}
-                                                    >
-                                                        Publisher
-                                                    </Label>
-                                                    <Input
-                                                        id={`publications.${index}.publisher`}
-                                                        placeholder="e.g., ACM Digital Library"
-                                                        {...form.register(
-                                                            `publications.${index}.publisher`,
-                                                        )}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <Label
-                                                        htmlFor={`publications.${index}.releaseDate`}
-                                                    >
-                                                        Release Date
-                                                    </Label>
-                                                    <Input
-                                                        id={`publications.${index}.releaseDate`}
-                                                        placeholder="e.g., 2023-06"
-                                                        {...form.register(
-                                                            `publications.${index}.releaseDate`,
-                                                        )}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <Label
-                                                    htmlFor={`publications.${index}.url`}
-                                                >
-                                                    Publication URL
-                                                </Label>
-                                                <Input
-                                                    id={`publications.${index}.url`}
-                                                    placeholder="https://..."
-                                                    {...form.register(
-                                                        `publications.${index}.url`,
-                                                    )}
-                                                />
-                                            </div>
-                                            <div>
-                                                <Label
-                                                    htmlFor={`publications.${index}.summary`}
-                                                >
-                                                    Summary
-                                                </Label>
-                                                <Textarea
-                                                    id={`publications.${index}.summary`}
-                                                    placeholder="Brief description of the publication..."
-                                                    rows={3}
-                                                    {...form.register(
-                                                        `publications.${index}.summary`,
-                                                    )}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="flex justify-center">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={addPublication}
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <Label
+                                    htmlFor={`publications.${index}.publisher`}
                                 >
-                                    <Plus className="mr-2 h-4 w-4" />
-                                    Add Publication
-                                </Button>
+                                    Publisher
+                                </Label>
+                                <Input
+                                    id={`publications.${index}.publisher`}
+                                    placeholder="e.g., ACM Digital Library"
+                                    {...form.register(
+                                        `publications.${index}.publisher`,
+                                    )}
+                                />
+                            </div>
+                            <div>
+                                <Label
+                                    htmlFor={`publications.${index}.releaseDate`}
+                                >
+                                    Release Date
+                                </Label>
+                                <Input
+                                    id={`publications.${index}.releaseDate`}
+                                    placeholder="e.g., 2023-06"
+                                    {...form.register(
+                                        `publications.${index}.releaseDate`,
+                                    )}
+                                />
                             </div>
                         </div>
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
-        </Card>
+                        <div>
+                            <Label htmlFor={`publications.${index}.url`}>
+                                Publication URL
+                            </Label>
+                            <Input
+                                id={`publications.${index}.url`}
+                                placeholder="https://..."
+                                {...form.register(`publications.${index}.url`)}
+                            />
+                        </div>
+                        <div>
+                            <Label htmlFor={`publications.${index}.summary`}>
+                                Summary
+                            </Label>
+                            <Textarea
+                                id={`publications.${index}.summary`}
+                                placeholder="Brief description of the publication..."
+                                rows={3}
+                                {...form.register(
+                                    `publications.${index}.summary`,
+                                )}
+                            />
+                        </div>
+                    </ProfileSectionEntry>
+                ))}
+            </div>
+            <div className="flex justify-center">
+                <Button
+                    type="button"
+                    variant="outline"
+                    onClick={addPublication}
+                >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Publication
+                </Button>
+            </div>
+        </ProfileSection>
     );
 }
 
@@ -1410,156 +1038,104 @@ function Volunteer() {
     };
 
     return (
-        <Card id="volunteer">
-            <Accordion
-                type="single"
-                collapsible
-                defaultValue="volunteer"
-                className="w-full"
-            >
-                <AccordionItem value="volunteer">
-                    <AccordionTrigger className="px-6 py-4 text-xl font-semibold hover:no-underline">
-                        <div className="flex items-center gap-2">
-                            <Heart className="h-5 w-5" />
-                            <div className="text-left">
-                                <div>Volunteer Experience</div>
-                                <div className="text-sm font-normal text-muted-foreground">
-                                    Your volunteer work and community service
-                                </div>
+        <ProfileSection
+            id="volunteer"
+            title="Volunteer Experience"
+            description="Your volunteer work and community service"
+            icon={<Heart className="h-5 w-5" />}
+        >
+            <div className="space-y-4">
+                {fields.map((field, index) => (
+                    <ProfileSectionEntry
+                        key={field.id}
+                        title={`Volunteer Experience ${index + 1}`}
+                        onRemove={() => remove(index)}
+                    >
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <Label htmlFor={`volunteer.${index}.position`}>
+                                    Position
+                                </Label>
+                                <Input
+                                    id={`volunteer.${index}.position`}
+                                    placeholder="e.g., Board Member"
+                                    {...form.register(
+                                        `volunteer.${index}.position`,
+                                    )}
+                                />
                             </div>
-                        </div>
-                    </AccordionTrigger>
-                    <AccordionContent>
-                        <div className="space-y-6 px-6 pt-4 pb-6">
-                            <div className="space-y-4">
-                                {fields.map((field, index) => (
-                                    <div
-                                        key={field.id}
-                                        className="rounded-lg border border-gray-200 bg-gray-50/50 p-4 transition-colors hover:bg-gray-50"
-                                    >
-                                        <div className="mb-4 flex items-center justify-between">
-                                            <h3 className="font-medium text-gray-900">
-                                                Volunteer Experience {index + 1}
-                                            </h3>
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => remove(index)}
-                                                className="text-gray-400 hover:text-red-500"
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                        <div className="space-y-4">
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <Label
-                                                        htmlFor={`volunteer.${index}.position`}
-                                                    >
-                                                        Position
-                                                    </Label>
-                                                    <Input
-                                                        id={`volunteer.${index}.position`}
-                                                        placeholder="e.g., Board Member"
-                                                        {...form.register(
-                                                            `volunteer.${index}.position`,
-                                                        )}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <Label
-                                                        htmlFor={`volunteer.${index}.organization`}
-                                                    >
-                                                        Organization
-                                                    </Label>
-                                                    <Input
-                                                        id={`volunteer.${index}.organization`}
-                                                        placeholder="e.g., Local Food Bank"
-                                                        {...form.register(
-                                                            `volunteer.${index}.organization`,
-                                                        )}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <Label
-                                                        htmlFor={`volunteer.${index}.startDate`}
-                                                    >
-                                                        Start Date
-                                                    </Label>
-                                                    <Input
-                                                        id={`volunteer.${index}.startDate`}
-                                                        placeholder="e.g., 2022-01"
-                                                        {...form.register(
-                                                            `volunteer.${index}.startDate`,
-                                                        )}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <Label
-                                                        htmlFor={`volunteer.${index}.endDate`}
-                                                    >
-                                                        End Date
-                                                    </Label>
-                                                    <Input
-                                                        id={`volunteer.${index}.endDate`}
-                                                        placeholder="e.g., 2023-12"
-                                                        {...form.register(
-                                                            `volunteer.${index}.endDate`,
-                                                        )}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <Label
-                                                    htmlFor={`volunteer.${index}.url`}
-                                                >
-                                                    Organization URL (Optional)
-                                                </Label>
-                                                <Input
-                                                    id={`volunteer.${index}.url`}
-                                                    placeholder="https://..."
-                                                    {...form.register(
-                                                        `volunteer.${index}.url`,
-                                                    )}
-                                                />
-                                            </div>
-                                            <div>
-                                                <Label
-                                                    htmlFor={`volunteer.${index}.summary`}
-                                                >
-                                                    Summary
-                                                </Label>
-                                                <Textarea
-                                                    id={`volunteer.${index}.summary`}
-                                                    placeholder="Describe your volunteer work and contributions..."
-                                                    rows={4}
-                                                    {...form.register(
-                                                        `volunteer.${index}.summary`,
-                                                    )}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="flex justify-center">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={addVolunteer}
+                            <div>
+                                <Label
+                                    htmlFor={`volunteer.${index}.organization`}
                                 >
-                                    <Plus className="mr-2 h-4 w-4" />
-                                    Add Volunteer
-                                </Button>
+                                    Organization
+                                </Label>
+                                <Input
+                                    id={`volunteer.${index}.organization`}
+                                    placeholder="e.g., Local Food Bank"
+                                    {...form.register(
+                                        `volunteer.${index}.organization`,
+                                    )}
+                                />
                             </div>
                         </div>
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
-        </Card>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <Label htmlFor={`volunteer.${index}.startDate`}>
+                                    Start Date
+                                </Label>
+                                <Input
+                                    id={`volunteer.${index}.startDate`}
+                                    placeholder="e.g., 2022-01"
+                                    {...form.register(
+                                        `volunteer.${index}.startDate`,
+                                    )}
+                                />
+                            </div>
+                            <div>
+                                <Label htmlFor={`volunteer.${index}.endDate`}>
+                                    End Date
+                                </Label>
+                                <Input
+                                    id={`volunteer.${index}.endDate`}
+                                    placeholder="e.g., 2023-12"
+                                    {...form.register(
+                                        `volunteer.${index}.endDate`,
+                                    )}
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <Label htmlFor={`volunteer.${index}.url`}>
+                                Organization URL (Optional)
+                            </Label>
+                            <Input
+                                id={`volunteer.${index}.url`}
+                                placeholder="https://..."
+                                {...form.register(`volunteer.${index}.url`)}
+                            />
+                        </div>
+                        <div>
+                            <Label htmlFor={`volunteer.${index}.summary`}>
+                                Summary
+                            </Label>
+                            <Textarea
+                                id={`volunteer.${index}.summary`}
+                                placeholder="Describe your volunteer work and contributions..."
+                                rows={4}
+                                {...form.register(`volunteer.${index}.summary`)}
+                            />
+                        </div>
+                    </ProfileSectionEntry>
+                ))}
+            </div>
+            <div className="flex justify-center">
+                <Button type="button" variant="outline" onClick={addVolunteer}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Volunteer
+                </Button>
+            </div>
+        </ProfileSection>
     );
 }
 
@@ -1632,7 +1208,7 @@ export const RESUME_SECTIONS = [
         id: "publications",
         title: "Publications",
         description: "Your published works and papers",
-        icon: <BookOpen className="h-3 w-3" />,
+        icon: <FileText className="h-3 w-3" />,
         component: Publications,
         optional: true,
     },
