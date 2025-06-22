@@ -1,0 +1,21 @@
+export const prompts = {
+    basics: "Synthesize a professional 'summary' for the 'basics' section. It must be 3-4 sentences long and tailored to the Job Description. Start with a sentence that combines the user's professional title with their years of experience. Follow by weaving in 2-3 of the most critical skills or qualifications from the Job Description that the user possesses. Conclude with a statement about their career objective as it relates to this specific role.",
+    work: "Analyze the user's work history against the Job Description. For each role, generate a JSON object. The 'summary' field should be a concise, 1-sentence overview connecting the role to the target job's domain. The 'highlights' array is the absolute priority. Migrate all key achievements from the user's original data into this array. Rewrite each highlight as a powerful, single-line bullet point. Each must start with a strong action verb (e.g., 'Engineered', 'Accelerated', 'Managed') and must quantify the result or impact using metrics (e.g., $, %, time saved) wherever possible. Align the outcomes directly with the responsibilities and desired outcomes in the Job Description.",
+    volunteer:
+        "Analyze the user's volunteer history. Select roles that demonstrate transferable skills (e.g., leadership, communication, project management) relevant to the Job Description. For each selected role, apply the same rules as the 'work' prompt: a 1-sentence 'summary' and a 'highlights' array of quantified, action-oriented bullet points that connect the volunteer experience to professional competencies.",
+    projects:
+        "Select the user's projects that most directly showcase the technologies and skills required by the Job Description. For each project, generate a JSON object where the 'highlights' array is the primary focus; the 'description' field should be minimal or omitted. Each highlight must be a bullet point that demonstrates a specific technical accomplishment or the application of a required skill. Explicitly mention key technologies from the project's 'keywords' that match the job's tech stack. Frame highlights as 'Problem-Action-Result' statements where possible.",
+    education:
+        "Generate the 'education' array. For each entry, critically evaluate the user's 'courses' list. Create a new, concise 'courses' array containing *only* the top 3-5 courses that are directly relevant to the core competencies of the job. Omit courses that are generic or irrelevant to the target role.",
+    awards: "From the user's profile, select only awards that are relevant to the industry, company, or role. For each, generate a JSON object. If the relevance isn't immediately obvious from the 'title', add a brief 'summary' field (a short phrase) to explicitly state its significance in the context of the job (e.g., 'Recognized for top 1% performance in a national sales competition').",
+    certificates:
+        "From the user's profile, select only certificates that directly match or are highly relevant to the qualifications, technologies, or methodologies listed in the Job Description. List the most relevant and recent certificates first.",
+    publications:
+        "Select publications whose topics are most aligned with the domain and responsibilities of the target job. Prioritize publications in more prestigious journals or conferences if that information is available.",
+    languages:
+        "Generate the 'languages' array. If the Job Description specifies a language requirement, ensure that language is listed first, if present in the user's profile. Otherwise, list them by proficiency.",
+    interests:
+        "Select 2-3 interests from the user's profile that can be framed to suggest positive professional traits. For each, generate a JSON object. Add a 'summary' field (a short phrase) that briefly frames the interest in a professional context (e.g., for 'Chess', add 'Demonstrates strategic thinking and foresight'; for 'Team Sports', add 'Highlights collaboration and teamwork').",
+    references:
+        "Generate a JSON array for the 'references' section containing a single entry with the 'name' field set to 'Professional references available upon request' and no other fields. Do not include actual reference contact information.",
+};

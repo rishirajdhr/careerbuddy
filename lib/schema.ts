@@ -64,7 +64,7 @@ const ProfileSchema = z.object({
 /** Schema for validating the basics section of a resume. */
 const BasicsSchema = z.object({
     /** Your full name, e.g. Peter Parker */
-    name: z.string().optional().describe("Your full name, e.g. Peter Parker"),
+    name: z.string().describe("Your full name, e.g. Peter Parker"),
 
     /** What you do, e.g. Web Developer */
     label: z.string().optional().describe("What you do, e.g. Web Developer"),
@@ -78,14 +78,10 @@ const BasicsSchema = z.object({
     /** Your email address, e.g. peter.parker@avengers.com */
     email: z
         .string()
-        .optional()
         .describe("Your email address, e.g. peter.parker@avengers.com"),
 
     /** Your phone number, e.g. 712-117-2923 */
-    phone: z
-        .string()
-        .optional()
-        .describe("Your phone number, e.g. 712-117-2923"),
+    phone: z.string().describe("Your phone number, e.g. 712-117-2923"),
 
     /** URL to your website, e.g. http://peterparker.com */
     url: z
@@ -114,7 +110,6 @@ const EducationSchema = z.object({
     /** The name of the institution, e.g. Massachusetts Institute of Technology */
     institution: z
         .string()
-        .optional()
         .describe(
             "The name of the institution, e.g. Massachusetts Institute of Technology",
         ),
@@ -123,30 +118,19 @@ const EducationSchema = z.object({
     url: z.string().optional().describe("URL to the institution's website"),
 
     /** The area of study, e.g. Computer Science */
-    area: z
-        .string()
-        .optional()
-        .describe("The area of study, e.g. Computer Science"),
+    area: z.string().describe("The area of study, e.g. Computer Science"),
 
     /** The type of study, e.g. Bachelor, Master */
-    studyType: z
-        .string()
-        .optional()
-        .describe("The type of study, e.g. Bachelor, Master"),
+    studyType: z.string().describe("The type of study, e.g. Bachelor, Master"),
 
     /** The start date of your education */
-    startDate: DateSchema.optional().describe(
-        "The start date of your education",
-    ),
+    startDate: DateSchema.describe("The start date of your education"),
 
     /** The end date of your education */
     endDate: DateSchema.optional().describe("The end date of your education"),
 
     /** Your grade point average, e.g. 3.67/4.0 */
-    score: z
-        .string()
-        .optional()
-        .describe("Your grade point average, e.g. 3.67/4.0"),
+    score: z.string().describe("Your grade point average, e.g. 3.67/4.0"),
 
     /** A list of notable courses or subjects you studied */
     courses: z
@@ -158,15 +142,11 @@ const EducationSchema = z.object({
 /** Schema for validating a user's work experience. */
 const WorkSchema = z.object({
     /** The name of the company, e.g. The Daily Bugle */
-    name: z
-        .string()
-        .optional()
-        .describe("The name of the company, e.g. The Daily Bugle"),
+    name: z.string().describe("The name of the company, e.g. The Daily Bugle"),
 
     /** The location of the company, e.g. New York, NY */
     location: z
         .string()
-        .optional()
         .describe("The location of the company, e.g. New York, NY"),
 
     /** A brief description of the company */
@@ -178,16 +158,13 @@ const WorkSchema = z.object({
     /** Your position at the company, e.g. Photographer */
     position: z
         .string()
-        .optional()
         .describe("Your position at the company, e.g. Photographer"),
 
     /** URL to the company's website */
     url: z.string().optional().describe("URL to the company's website"),
 
     /** The start date of your employment */
-    startDate: DateSchema.optional().describe(
-        "The start date of your employment",
-    ),
+    startDate: DateSchema.describe("The start date of your employment"),
 
     /** The end date of your employment */
     endDate: DateSchema.optional().describe("The end date of your employment"),
@@ -210,10 +187,7 @@ const WorkSchema = z.object({
 /** Schema for validating a user's project details. */
 const ProjectSchema = z.object({
     /** The name of the project, e.g. Web Shooter */
-    name: z
-        .string()
-        .optional()
-        .describe("The name of the project, e.g. Web Shooter"),
+    name: z.string().describe("The name of the project, e.g. Web Shooter"),
 
     /** A brief description of the project */
     description: z
@@ -234,7 +208,7 @@ const ProjectSchema = z.object({
         .describe("A list of keywords related to the project"),
 
     /** The start date of the project */
-    startDate: DateSchema.optional().describe("The start date of the project"),
+    startDate: DateSchema.describe("The start date of the project"),
 
     /** The end date of the project */
     endDate: DateSchema.optional().describe("The end date of the project"),
@@ -294,11 +268,10 @@ const CertificateSchema = z.object({
     /** The name of the certificate, e.g. Licensed Avenger */
     name: z
         .string()
-        .optional()
         .describe("The name of the certificate, e.g. Licensed Avenger"),
 
     /** The date the certificate was issued */
-    date: DateSchema.optional().describe("The date the certificate was issued"),
+    date: DateSchema.describe("The date the certificate was issued"),
 
     /** URL to the certificate or the issuing authority */
     url: z
@@ -309,7 +282,6 @@ const CertificateSchema = z.object({
     /** The issuer of the certificate, e.g. S.H.I.E.L.D. */
     issuer: z
         .string()
-        .optional()
         .describe("The issuer of the certificate, e.g. S.H.I.E.L.D."),
 });
 
@@ -318,7 +290,6 @@ const PublicationSchema = z.object({
     /** The name of the publication, e.g. Mechanics of Web Shooter Fluid */
     name: z
         .string()
-        .optional()
         .describe(
             "The name of the publication, e.g. Mechanics of Web Shooter Fluid",
         ),
@@ -326,15 +297,12 @@ const PublicationSchema = z.object({
     /** The publisher of the publication, e.g. S.H.I.E.L.D., Journal of Superhero Sciences */
     publisher: z
         .string()
-        .optional()
         .describe(
             "The publisher of the publication, e.g. S.H.I.E.L.D., Journal of Superhero Sciences",
         ),
 
     /** The release date of the publication */
-    releaseDate: DateSchema.optional().describe(
-        "The release date of the publication",
-    ),
+    releaseDate: DateSchema.describe("The release date of the publication"),
 
     /** URL to the publication */
     url: z.string().optional().describe("URL to the publication"),
@@ -351,16 +319,14 @@ const AwardSchema = z.object({
     /** The title of the award, e.g. Best Superhero of the Year */
     title: z
         .string()
-        .optional()
         .describe("The title of the award, e.g. Best Superhero of the Year"),
 
     /** The date the award was received */
-    date: DateSchema.optional().describe("The date the award was received"),
+    date: DateSchema.describe("The date the award was received"),
 
     /** The organization that awarded it, e.g. S.H.I.E.L.D. */
     awarder: z
         .string()
-        .optional()
         .describe("The organization that awarded it, e.g. S.H.I.E.L.D."),
 
     /** A brief summary of the award */
@@ -372,13 +338,11 @@ const VolunteerSchema = z.object({
     /** The name of the organization, e.g. Avengers Initiative */
     organization: z
         .string()
-        .optional()
         .describe("The name of the organization, e.g. Avengers Initiative"),
 
     /** Your position in the organization, e.g. Volunteer, Coordinator */
     position: z
         .string()
-        .optional()
         .describe(
             "Your position in the organization, e.g. Volunteer, Coordinator",
         ),
@@ -387,9 +351,7 @@ const VolunteerSchema = z.object({
     url: z.string().optional().describe("URL to the organization's website"),
 
     /** The start date of your volunteer work */
-    startDate: DateSchema.optional().describe(
-        "The start date of your volunteer work",
-    ),
+    startDate: DateSchema.describe("The start date of your volunteer work"),
 
     /** The end date of your volunteer work */
     endDate: DateSchema.optional().describe(
@@ -418,7 +380,6 @@ const LanguageSchema = z.object({
     /** The name of the language, e.g. English, Spanish */
     language: z
         .string()
-        .optional()
         .describe("The name of the language, e.g. English, Spanish"),
 
     /** The level of fluency in the language, e.g. Fluent, Beginner */
@@ -435,7 +396,6 @@ const InterestSchema = z.object({
     /** The name of the interest, e.g. Mathematics, Physics */
     name: z
         .string()
-        .optional()
         .describe("The name of the interest, e.g. Mathematics, Physics"),
 
     /** A list of keywords related to the interest, e.g. Calculus, Quantum Mechanics */
@@ -452,7 +412,6 @@ const ReferenceSchema = z.object({
     /** The name of the person giving the reference, e.g. Tony Stark */
     name: z
         .string()
-        .optional()
         .describe(
             "The name of the person giving the reference, e.g. Tony Stark",
         ),
@@ -503,7 +462,7 @@ export const ResumeSchema = z.object({
         ),
 
     /** Your personal details */
-    basics: BasicsSchema.optional().describe("Your personal details"),
+    basics: BasicsSchema.describe("Your personal details"),
 
     /** Your education details */
     education: z

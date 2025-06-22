@@ -19,6 +19,7 @@ export const profileFormDefaultValues: Resume = {
     work: [
         {
             name: "",
+            location: "",
             position: "",
             startDate: "",
             endDate: "",
@@ -38,7 +39,9 @@ export const profileFormDefaultValues: Resume = {
         },
     ],
     skills: [],
-    projects: [{ name: "", description: "", url: "", keywords: [] }],
+    projects: [
+        { name: "", startDate: "", description: "", url: "", keywords: [] },
+    ],
     certificates: [{ name: "", date: "", issuer: "", url: "" }],
     awards: [{ title: "", date: "", awarder: "", summary: "" }],
     interests: [],
