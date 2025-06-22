@@ -9,6 +9,8 @@ interface ResumeContextType {
     updateProfile: (newProfile: Partial<Resume>) => void;
     jobDescription: string;
     updateJobDescription: (jobDescription: string) => void;
+    generatedResume: Resume | null;
+    updateGeneratedResume: (resume: Resume | null) => void;
 }
 
 const ResumeContext = createContext<ResumeContextType | undefined>(undefined);
@@ -16,6 +18,7 @@ const ResumeContext = createContext<ResumeContextType | undefined>(undefined);
 export function ResumeProvider({ children }: { children: ReactNode }) {
     const [profile, setProfile] = useState<Resume>(profileFormDefaultValues);
     const [jobDescription, setJobDescription] = useState<string>("");
+    const [generatedResume, setGeneratedResume] = useState<Resume | null>(null);
 
     const updateProfile = (newProfile: Partial<Resume>) => {
         setProfile((prev) => ({ ...prev, ...newProfile }));
@@ -25,6 +28,10 @@ export function ResumeProvider({ children }: { children: ReactNode }) {
         setJobDescription(jobDescription);
     };
 
+    const updateGeneratedResume = (resume: Resume | null) => {
+        setGeneratedResume(resume);
+    };
+
     return (
         <ResumeContext.Provider
             value={{
@@ -32,6 +39,8 @@ export function ResumeProvider({ children }: { children: ReactNode }) {
                 updateProfile,
                 jobDescription,
                 updateJobDescription,
+                generatedResume,
+                updateGeneratedResume,
             }}
         >
             {children}
