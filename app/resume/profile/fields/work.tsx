@@ -7,10 +7,10 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Resume } from "@/lib/schema";
 import { useFormContext } from "react-hook-form";
 import { MonthYearPicker } from "@/components/ui/month-year-picker";
+import { Checkbox } from "@/components/ui/checkbox";
 
 type WorkFieldProps = { index: number };
 
@@ -63,8 +63,47 @@ export function WorkStartDateField({ index }: WorkFieldProps) {
     );
 }
 
+export function WorkCurrentField({ index }: WorkFieldProps) {
+    const form = useFormContext<Resume>();
+    const current = form.watch(`work.${index}.current`);
+
+    return (
+        <FormField
+            control={form.control}
+            name={`work.${index}.current`}
+            render={({ field }) => (
+                <FormItem className="flex flex-row items-center">
+                    <FormControl>
+                        <Checkbox
+                            checked={!!field.value}
+                            onCheckedChange={(checked) => {
+                                field.onChange(checked);
+                                if (checked) {
+                                    form.setValue(`work.${index}.endDate`, "");
+                                }
+                            }}
+                            className="border-gray-300 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600 data-[state=checked]:text-white"
+                        />
+                    </FormControl>
+                    <FormLabel className="mb-0 cursor-pointer text-sm font-normal text-gray-900 select-none">
+                        I currently work here
+                    </FormLabel>
+                </FormItem>
+            )}
+        />
+    );
+}
+
 export function WorkEndDateField({ index }: WorkFieldProps) {
-    return <MonthYearPicker name={`work.${index}.endDate`} label="End Date" />;
+    const form = useFormContext<Resume>();
+    const current = form.watch(`work.${index}.current`);
+    return (
+        <MonthYearPicker
+            name={`work.${index}.endDate`}
+            label="End Date"
+            disabled={!!current}
+        />
+    );
 }
 
 export function WorkSummaryField({ index }: WorkFieldProps) {

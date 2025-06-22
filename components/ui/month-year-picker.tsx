@@ -41,9 +41,14 @@ const years = Array.from({ length: currentYear - 1949 }, (_, i) => ({
 interface MonthYearPickerProps {
     name: string;
     label: string;
+    disabled?: boolean;
 }
 
-export function MonthYearPicker({ name, label }: MonthYearPickerProps) {
+export function MonthYearPicker({
+    name,
+    label,
+    disabled,
+}: MonthYearPickerProps) {
     return (
         <FormField
             name={name}
@@ -69,9 +74,10 @@ export function MonthYearPicker({ name, label }: MonthYearPickerProps) {
                             <Select
                                 value={month}
                                 onValueChange={handleMonthChange}
+                                disabled={disabled}
                             >
                                 <FormControl>
-                                    <SelectTrigger>
+                                    <SelectTrigger disabled={disabled}>
                                         <SelectValue placeholder="Month" />
                                     </SelectTrigger>
                                 </FormControl>
@@ -80,6 +86,7 @@ export function MonthYearPicker({ name, label }: MonthYearPickerProps) {
                                         <SelectItem
                                             key={monthOption.value}
                                             value={monthOption.value}
+                                            disabled={disabled}
                                         >
                                             {monthOption.label}
                                         </SelectItem>
@@ -90,9 +97,10 @@ export function MonthYearPicker({ name, label }: MonthYearPickerProps) {
                             <Select
                                 value={year}
                                 onValueChange={handleYearChange}
+                                disabled={disabled}
                             >
                                 <FormControl>
-                                    <SelectTrigger>
+                                    <SelectTrigger disabled={disabled}>
                                         <SelectValue placeholder="Year" />
                                     </SelectTrigger>
                                 </FormControl>
@@ -101,6 +109,7 @@ export function MonthYearPicker({ name, label }: MonthYearPickerProps) {
                                         <SelectItem
                                             key={yearOption.value}
                                             value={yearOption.value}
+                                            disabled={disabled}
                                         >
                                             {yearOption.label}
                                         </SelectItem>
