@@ -89,47 +89,57 @@ export function SkillsSearchField() {
     const form = useFormContext<Resume>();
     const [inputValue, setInputValue] = useState("");
 
-    const currentSkills = form.watch("skills") || [];
-
-    const addSkill = () => {
-        if (inputValue.trim()) {
-            const newSkill = {
-                name: inputValue.trim(),
-                level: "",
-                keywords: [],
-            };
-            const updatedSkills = [...currentSkills, newSkill];
-            form.setValue("skills", updatedSkills);
-            setInputValue("");
-        }
-    };
-
-    const removeSkill = (index: number) => {
-        const updatedSkills = currentSkills.filter((_, i) => i !== index);
-        form.setValue("skills", updatedSkills);
-    };
-
-    const skillNames = currentSkills
-        .map((skill) => skill.name)
-        .filter(Boolean) as string[];
-
     return (
-        <FormItem>
-            <FormLabel>Skills</FormLabel>
-            <div className="space-y-3">
-                <TagInput
-                    value={inputValue}
-                    onChange={setInputValue}
-                    onAdd={addSkill}
-                    placeholder="Type a skill and press Enter or click +"
-                />
-                <TagsList
-                    tags={skillNames}
-                    onRemove={removeSkill}
-                    color="blue"
-                />
-            </div>
-            <FormMessage />
-        </FormItem>
+        <FormField
+            control={form.control}
+            name="skills"
+            render={({ field }) => {
+                const currentSkills = field.value || [];
+
+                const addSkill = () => {
+                    if (inputValue.trim()) {
+                        const newSkill = {
+                            name: inputValue.trim(),
+                            level: "",
+                            keywords: [],
+                        };
+                        const updatedSkills = [...currentSkills, newSkill];
+                        field.onChange(updatedSkills);
+                        setInputValue("");
+                    }
+                };
+
+                const removeSkill = (index: number) => {
+                    const updatedSkills = currentSkills.filter(
+                        (_: any, i: number) => i !== index,
+                    );
+                    field.onChange(updatedSkills);
+                };
+
+                const skillNames = currentSkills
+                    .map((skill: any) => skill.name)
+                    .filter(Boolean) as string[];
+
+                return (
+                    <FormItem>
+                        <FormLabel>Skills</FormLabel>
+                        <div className="space-y-3">
+                            <TagInput
+                                value={inputValue}
+                                onChange={setInputValue}
+                                onAdd={addSkill}
+                                placeholder="Type a skill and press Enter or click +"
+                            />
+                            <TagsList
+                                tags={skillNames}
+                                onRemove={removeSkill}
+                                color="blue"
+                            />
+                        </div>
+                        <FormMessage />
+                    </FormItem>
+                );
+            }}
+        />
     );
 }
