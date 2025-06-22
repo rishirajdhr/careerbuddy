@@ -1,4 +1,25 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Career Buddy
+
+> Your comprehensive career development platform.
+
+## Gemini API Key Setup
+
+To use features that require Google's Gemini API, you need to set up an API key:
+
+1. **Get your API key:**
+
+    - Visit [Google AI Studio](https://aistudio.google.com/app/apikey) and sign in with your Google account to generate an API key.
+
+2. **Set up your API key locally:**
+
+    - Create a file named `.env.local` in the root of your project (if it doesn't already exist).
+    - Add the following line to `.env.local`:
+
+        ```env
+        GOOGLE_GENERATIVE_AI_API_KEY=your-api-key-here
+        ```
+
+    - Replace `your-api-key-here` with the API key you obtained from Google AI Studio.
 
 ## Getting Started
 
@@ -14,23 +35,29 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser to use the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Using the Application
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Once the development server is running, you can access the main features of the application:
 
-## Learn More
+- **Resume Builder:**
 
-To learn more about Next.js, take a look at the following resources:
+    - Navigate to `/resume` to start building your resume.
+    - Fill in your personal information, education, work experience, and other sections.
+    - Preview your resume and download it when you're ready.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Interview Prep:**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+    - Go to `/interview-prep` to generate interview questions and prepare for interviews.
+    - Use the mock interview feature to practice answering questions.
 
-## Deploy on Vercel
+- **Career Roadmap:**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+    - Visit `/roadmap` to create a personalized career roadmap.
+    - Set your career goals and track your progress.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Dashboard:**
+    - The dashboard provides an overview of your applications and progress.
+
+Explore the navigation menu to access these features. The app will auto-update as you make changes.
