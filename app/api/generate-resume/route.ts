@@ -23,6 +23,12 @@ const SectionSelectionSchema = z.array(
     }),
 );
 
+// Schema for job information extraction response
+const JobInfoSchema = z.object({
+    company: z.string().min(1, "Company name is required"),
+    role: z.string().min(1, "Job role is required"),
+});
+
 const pickSectionsTask = (jobDescription: string, userProfile: Resume) => `
 ## Scenario
 
@@ -173,7 +179,22 @@ export async function POST(request: NextRequest) {
         const { userProfile, jobDescription } =
             GenerateResumeRequestSchema.parse(body);
 
-        // Step 1: Determine which sections to include
+        // Step 1: Extract job information (company and role)
+        const jobInfoResult = await generateObject({
+            model: google("gemini-2.5-flash"),
+            prompt: extractJobInfoTask(jobDescription),
+            providerOptions: {
+                google: {
+                    thinkingConfig: {
+                        thinkingBudget: 0, // Disables thinking
+                    },
+                } satisfies GoogleGenerativeAIProviderOptions,
+            },
+            schema: JobInfoSchema,
+            system: extractJobInfoSystemPrompt,
+        });
+
+        // Step 2: Determine which sections to include
         const sectionsResult = await generateObject({
             model: google("gemini-2.0-flash"),
             prompt: pickSectionsTask(jobDescription, userProfile),
@@ -249,11 +270,12 @@ export async function POST(request: NextRequest) {
             }
         }
 
-        // Return the generated resume
+        // Return the generated resume with job information
         return NextResponse.json({
             success: true,
             resume,
-            sections: sectionsResult.object,
+            company: jobInfoResult.object.company,
+            role: jobInfoResult.object.role,
         });
     } catch (error) {
         console.error("Error generating resume:", error);

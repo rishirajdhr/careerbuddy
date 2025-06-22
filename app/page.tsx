@@ -28,9 +28,9 @@ const features = [
         color: "text-green-600",
     },
     {
-        title: "Application Tracker",
-        description: "Track your job applications and interview progress",
-        href: "/tracker",
+        title: "Interview Prep",
+        description: "Prepare for your interviews with personalized questions",
+        href: "/interview-prep",
         icon: ClipboardList,
         color: "text-purple-600",
     },

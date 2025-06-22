@@ -1,7 +1,7 @@
 "use client";
 
 import { format } from "date-fns";
-import { Plus, Edit, Trash2, MessageSquare, FileText } from "lucide-react";
+import { Plus, Trash2, MessageSquare, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -10,19 +10,17 @@ import { Application, statusColors } from "../types";
 interface ApplicationTableProps {
     applications: Application[];
     onAddApplication: () => void;
-    onEditApplication: (app: Application) => void;
     onDeleteApplication: (id: number) => void;
     onGenerateQuestions: (app: Application) => void;
-    onDownloadResume: (app: Application) => void;
+    isGeneratingId?: number | null;
 }
 
 export function ApplicationTable({
     applications,
     onAddApplication,
-    onEditApplication,
     onDeleteApplication,
     onGenerateQuestions,
-    onDownloadResume,
+    isGeneratingId,
 }: ApplicationTableProps) {
     // Helper function to create a date without timezone issues
     const createLocalDate = (dateString: string): Date => {
@@ -81,6 +79,11 @@ export function ApplicationTable({
                                                 </div>
                                                 <div className="text-sm text-gray-500">
                                                     {app.position}
+                                                    {app.role && app.role !== app.position && (
+                                                        <span className="text-xs text-gray-400 ml-1">
+                                                            ({app.role})
+                                                        </span>
+                                                    )}
                                                 </div>
                                             </div>
                                             <Badge className={statusColors[app.status as keyof typeof statusColors]}>
@@ -101,14 +104,19 @@ export function ApplicationTable({
                                                     <Button
                                                         variant="ghost"
                                                         size="sm"
-                                                        onClick={() => onEditApplication(app)}
-                                                        className="text-gray-500 hover:text-gray-700"
+                                                        onClick={() => onGenerateQuestions(app)}
+                                                        className="text-blue-500 hover:text-blue-700"
+                                                        disabled={isGeneratingId === app.id}
                                                     >
-                                                        <Edit className="h-4 w-4" />
+                                                        {isGeneratingId === app.id ? (
+                                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                                        ) : (
+                                                            <MessageSquare className="h-4 w-4" />
+                                                        )}
                                                     </Button>
                                                 </TooltipTrigger>
                                                 <TooltipContent>
-                                                    <p>Edit application</p>
+                                                    <p>Generate interview questions</p>
                                                 </TooltipContent>
                                             </Tooltip>
                                             <Tooltip>
@@ -126,38 +134,6 @@ export function ApplicationTable({
                                                     <p>Delete application</p>
                                                 </TooltipContent>
                                             </Tooltip>
-                                            <Tooltip>
-                                                <TooltipTrigger asChild>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={() => onGenerateQuestions(app)}
-                                                        className="text-blue-500 hover:text-blue-700"
-                                                    >
-                                                        <MessageSquare className="h-4 w-4" />
-                                                    </Button>
-                                                </TooltipTrigger>
-                                                <TooltipContent>
-                                                    <p>Generate interview questions</p>
-                                                </TooltipContent>
-                                            </Tooltip>
-                                            {app.resumeFile && (
-                                                <Tooltip>
-                                                    <TooltipTrigger asChild>
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            onClick={() => onDownloadResume(app)}
-                                                            className="text-purple-500 hover:text-purple-700"
-                                                        >
-                                                            <FileText className="h-4 w-4" />
-                                                        </Button>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent>
-                                                        <p>Download resume</p>
-                                                    </TooltipContent>
-                                                </Tooltip>
-                                            )}
                                         </div>
                                     </td>
                                 </tr>

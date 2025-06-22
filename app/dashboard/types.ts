@@ -1,3 +1,5 @@
+import { Resume } from "@/lib/schema";
+
 export interface User {
     id: string;
     name: string;
@@ -20,6 +22,9 @@ export type Application = {
     salary: string;
     nextAction: string;
     nextActionDate: string;
+    jobDescription?: string; // Job description used for resume generation
+    role?: string; // Extracted job role/title
+    userProfile?: Resume; // User profile snapshot at time of application
 };
 
 export const statusColors = {
