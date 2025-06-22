@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Resume } from "@/lib/schema";
 import { useFormContext } from "react-hook-form";
+import { MonthYearPicker } from "@/components/ui/month-year-picker";
 
 type ProjectFieldProps = { index: number };
 
@@ -47,7 +48,7 @@ export function ProjectDescriptionField({ index }: ProjectFieldProps) {
                     <FormLabel>Description</FormLabel>
                     <FormControl>
                         <Textarea
-                            placeholder="Describe the project..."
+                            placeholder="Brief description of the project"
                             rows={3}
                             {...field}
                         />
@@ -60,42 +61,17 @@ export function ProjectDescriptionField({ index }: ProjectFieldProps) {
 }
 
 export function ProjectStartDateField({ index }: ProjectFieldProps) {
-    const form = useFormContext<Resume>();
-
     return (
-        <FormField
-            control={form.control}
+        <MonthYearPicker
             name={`projects.${index}.startDate`}
-            render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Start Date</FormLabel>
-                    <FormControl>
-                        <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-            )}
+            label="Start Date"
         />
     );
 }
 
 export function ProjectEndDateField({ index }: ProjectFieldProps) {
-    const form = useFormContext<Resume>();
-
     return (
-        <FormField
-            control={form.control}
-            name={`projects.${index}.endDate`}
-            render={({ field }) => (
-                <FormItem>
-                    <FormLabel>End Date</FormLabel>
-                    <FormControl>
-                        <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-            )}
-        />
+        <MonthYearPicker name={`projects.${index}.endDate`} label="End Date" />
     );
 }
 
@@ -111,7 +87,7 @@ export function ProjectUrlField({ index }: ProjectFieldProps) {
                     <FormLabel>Project URL (Optional)</FormLabel>
                     <FormControl>
                         <Input
-                            placeholder="https://github.com/username/project"
+                            placeholder="e.g., https://github.com/username/project"
                             {...field}
                         />
                     </FormControl>

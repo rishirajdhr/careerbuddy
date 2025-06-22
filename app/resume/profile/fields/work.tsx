@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Resume } from "@/lib/schema";
 import { useFormContext } from "react-hook-form";
+import { MonthYearPicker } from "@/components/ui/month-year-picker";
 
 type WorkFieldProps = { index: number };
 
@@ -22,10 +23,10 @@ export function PositionField({ index }: WorkFieldProps) {
             name={`work.${index}.position`}
             render={({ field }) => (
                 <FormItem>
-                    <FormLabel>Job Title</FormLabel>
+                    <FormLabel>Position</FormLabel>
                     <FormControl>
                         <Input
-                            placeholder="e.g., Senior Software Engineer"
+                            placeholder="e.g., Software Engineer"
                             {...field}
                         />
                     </FormControl>
@@ -45,9 +46,9 @@ export function CompanyNameField({ index }: WorkFieldProps) {
             name={`work.${index}.name`}
             render={({ field }) => (
                 <FormItem>
-                    <FormLabel>Company</FormLabel>
+                    <FormLabel>Company Name</FormLabel>
                     <FormControl>
-                        <Input placeholder="e.g., TechCorp Inc." {...field} />
+                        <Input placeholder="e.g., Google" {...field} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -57,43 +58,13 @@ export function CompanyNameField({ index }: WorkFieldProps) {
 }
 
 export function WorkStartDateField({ index }: WorkFieldProps) {
-    const form = useFormContext<Resume>();
-
     return (
-        <FormField
-            control={form.control}
-            name={`work.${index}.startDate`}
-            render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Start Date</FormLabel>
-                    <FormControl>
-                        <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-            )}
-        />
+        <MonthYearPicker name={`work.${index}.startDate`} label="Start Date" />
     );
 }
 
 export function WorkEndDateField({ index }: WorkFieldProps) {
-    const form = useFormContext<Resume>();
-
-    return (
-        <FormField
-            control={form.control}
-            name={`work.${index}.endDate`}
-            render={({ field }) => (
-                <FormItem>
-                    <FormLabel>End Date</FormLabel>
-                    <FormControl>
-                        <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-            )}
-        />
-    );
+    return <MonthYearPicker name={`work.${index}.endDate`} label="End Date" />;
 }
 
 export function WorkSummaryField({ index }: WorkFieldProps) {
@@ -104,12 +75,11 @@ export function WorkSummaryField({ index }: WorkFieldProps) {
             control={form.control}
             name={`work.${index}.summary`}
             render={({ field }) => (
-                <FormItem className="col-span-2">
+                <FormItem>
                     <FormLabel>Summary</FormLabel>
                     <FormControl>
-                        <Textarea
-                            placeholder="Describe your key responsibilities and achievements..."
-                            rows={4}
+                        <Input
+                            placeholder="Brief description of your role and responsibilities"
                             {...field}
                         />
                     </FormControl>
@@ -131,7 +101,10 @@ export function WorkLocationField({ index }: WorkFieldProps) {
                 <FormItem>
                     <FormLabel>Location</FormLabel>
                     <FormControl>
-                        <Input placeholder="e.g., New York, NY" {...field} />
+                        <Input
+                            placeholder="e.g., San Francisco, CA"
+                            {...field}
+                        />
                     </FormControl>
                     <FormMessage />
                 </FormItem>

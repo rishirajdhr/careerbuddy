@@ -9,28 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Resume } from "@/lib/schema";
 import { useFormContext } from "react-hook-form";
+import { MonthYearPicker } from "@/components/ui/month-year-picker";
 
 type VolunteerFieldProps = { index: number };
-
-export function VolunteerPositionField({ index }: VolunteerFieldProps) {
-    const form = useFormContext<Resume>();
-
-    return (
-        <FormField
-            control={form.control}
-            name={`volunteer.${index}.position`}
-            render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Position</FormLabel>
-                    <FormControl>
-                        <Input placeholder="e.g., Board Member" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-            )}
-        />
-    );
-}
 
 export function OrganizationField({ index }: VolunteerFieldProps) {
     const form = useFormContext<Resume>();
@@ -43,7 +24,30 @@ export function OrganizationField({ index }: VolunteerFieldProps) {
                 <FormItem>
                     <FormLabel>Organization</FormLabel>
                     <FormControl>
-                        <Input placeholder="e.g., Local Food Bank" {...field} />
+                        <Input placeholder="e.g., Red Cross" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            )}
+        />
+    );
+}
+
+export function VolunteerPositionField({ index }: VolunteerFieldProps) {
+    const form = useFormContext<Resume>();
+
+    return (
+        <FormField
+            control={form.control}
+            name={`volunteer.${index}.position`}
+            render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Position</FormLabel>
+                    <FormControl>
+                        <Input
+                            placeholder="e.g., Volunteer Coordinator"
+                            {...field}
+                        />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -53,42 +57,17 @@ export function OrganizationField({ index }: VolunteerFieldProps) {
 }
 
 export function VolunteerStartDateField({ index }: VolunteerFieldProps) {
-    const form = useFormContext<Resume>();
-
     return (
-        <FormField
-            control={form.control}
+        <MonthYearPicker
             name={`volunteer.${index}.startDate`}
-            render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Start Date</FormLabel>
-                    <FormControl>
-                        <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-            )}
+            label="Start Date"
         />
     );
 }
 
 export function VolunteerEndDateField({ index }: VolunteerFieldProps) {
-    const form = useFormContext<Resume>();
-
     return (
-        <FormField
-            control={form.control}
-            name={`volunteer.${index}.endDate`}
-            render={({ field }) => (
-                <FormItem>
-                    <FormLabel>End Date</FormLabel>
-                    <FormControl>
-                        <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-            )}
-        />
+        <MonthYearPicker name={`volunteer.${index}.endDate`} label="End Date" />
     );
 }
 
@@ -103,7 +82,10 @@ export function VolunteerUrlField({ index }: VolunteerFieldProps) {
                 <FormItem>
                     <FormLabel>Organization URL (Optional)</FormLabel>
                     <FormControl>
-                        <Input placeholder="https://..." {...field} />
+                        <Input
+                            placeholder="e.g., https://www.redcross.org"
+                            {...field}
+                        />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -121,11 +103,11 @@ export function VolunteerSummaryField({ index }: VolunteerFieldProps) {
             name={`volunteer.${index}.summary`}
             render={({ field }) => (
                 <FormItem>
-                    <FormLabel>Summary</FormLabel>
+                    <FormLabel>Summary (Optional)</FormLabel>
                     <FormControl>
                         <Textarea
-                            placeholder="Describe your volunteer work and contributions..."
-                            rows={4}
+                            placeholder="Brief description of your volunteer work and responsibilities"
+                            rows={3}
                             {...field}
                         />
                     </FormControl>

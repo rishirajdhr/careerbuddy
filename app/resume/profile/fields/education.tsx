@@ -8,6 +8,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Resume } from "@/lib/schema";
 import { useFormContext } from "react-hook-form";
+import { MonthYearPicker } from "@/components/ui/month-year-picker";
 
 type EducationFieldProps = { index: number };
 
@@ -98,41 +99,16 @@ export function GpaField({ index }: EducationFieldProps) {
 }
 
 export function EducationStartDateField({ index }: EducationFieldProps) {
-    const form = useFormContext<Resume>();
-
     return (
-        <FormField
-            control={form.control}
+        <MonthYearPicker
             name={`education.${index}.startDate`}
-            render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Start Date</FormLabel>
-                    <FormControl>
-                        <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-            )}
+            label="Start Date"
         />
     );
 }
 
 export function EducationEndDateField({ index }: EducationFieldProps) {
-    const form = useFormContext<Resume>();
-
     return (
-        <FormField
-            control={form.control}
-            name={`education.${index}.endDate`}
-            render={({ field }) => (
-                <FormItem>
-                    <FormLabel>End Date</FormLabel>
-                    <FormControl>
-                        <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-            )}
-        />
+        <MonthYearPicker name={`education.${index}.endDate`} label="End Date" />
     );
 }

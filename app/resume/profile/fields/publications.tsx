@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Resume } from "@/lib/schema";
 import { useFormContext } from "react-hook-form";
+import { MonthYearPicker } from "@/components/ui/month-year-picker";
 
 type PublicationFieldProps = { index: number };
 
@@ -24,7 +25,7 @@ export function PublicationNameField({ index }: PublicationFieldProps) {
                     <FormLabel>Publication Title</FormLabel>
                     <FormControl>
                         <Input
-                            placeholder="e.g., Advanced React Patterns"
+                            placeholder="e.g., Advanced Machine Learning Techniques"
                             {...field}
                         />
                     </FormControl>
@@ -47,7 +48,7 @@ export function PublisherField({ index }: PublicationFieldProps) {
                     <FormLabel>Publisher</FormLabel>
                     <FormControl>
                         <Input
-                            placeholder="e.g., ACM Digital Library"
+                            placeholder="e.g., IEEE Computer Society"
                             {...field}
                         />
                     </FormControl>
@@ -59,21 +60,10 @@ export function PublisherField({ index }: PublicationFieldProps) {
 }
 
 export function PublicationReleaseDateField({ index }: PublicationFieldProps) {
-    const form = useFormContext<Resume>();
-
     return (
-        <FormField
-            control={form.control}
+        <MonthYearPicker
             name={`publications.${index}.releaseDate`}
-            render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Release Date</FormLabel>
-                    <FormControl>
-                        <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-            )}
+            label="Release Date"
         />
     );
 }
@@ -87,9 +77,12 @@ export function PublicationUrlField({ index }: PublicationFieldProps) {
             name={`publications.${index}.url`}
             render={({ field }) => (
                 <FormItem>
-                    <FormLabel>Publication URL</FormLabel>
+                    <FormLabel>Publication URL (Optional)</FormLabel>
                     <FormControl>
-                        <Input placeholder="https://..." {...field} />
+                        <Input
+                            placeholder="e.g., https://ieeexplore.ieee.org/document/..."
+                            {...field}
+                        />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -107,10 +100,10 @@ export function PublicationSummaryField({ index }: PublicationFieldProps) {
             name={`publications.${index}.summary`}
             render={({ field }) => (
                 <FormItem>
-                    <FormLabel>Summary</FormLabel>
+                    <FormLabel>Summary (Optional)</FormLabel>
                     <FormControl>
                         <Textarea
-                            placeholder="Brief description of the publication..."
+                            placeholder="Brief description of the publication and its significance"
                             rows={3}
                             {...field}
                         />

@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Resume } from "@/lib/schema";
 import { useFormContext } from "react-hook-form";
+import { MonthYearPicker } from "@/components/ui/month-year-picker";
 
 type AwardFieldProps = { index: number };
 
@@ -56,22 +57,8 @@ export function AwarderField({ index }: AwardFieldProps) {
 }
 
 export function AwardDateField({ index }: AwardFieldProps) {
-    const form = useFormContext<Resume>();
-
     return (
-        <FormField
-            control={form.control}
-            name={`awards.${index}.date`}
-            render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Date Received</FormLabel>
-                    <FormControl>
-                        <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-            )}
-        />
+        <MonthYearPicker name={`awards.${index}.date`} label="Date Received" />
     );
 }
 
@@ -84,10 +71,10 @@ export function AwardSummaryField({ index }: AwardFieldProps) {
             name={`awards.${index}.summary`}
             render={({ field }) => (
                 <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel>Summary (Optional)</FormLabel>
                     <FormControl>
                         <Textarea
-                            placeholder="Describe the award and its significance..."
+                            placeholder="Brief description of the award and why you received it"
                             rows={3}
                             {...field}
                         />

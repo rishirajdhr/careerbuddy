@@ -8,6 +8,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Resume } from "@/lib/schema";
 import { useFormContext } from "react-hook-form";
+import { MonthYearPicker } from "@/components/ui/month-year-picker";
 
 type CertificationFieldProps = { index: number };
 
@@ -58,21 +59,10 @@ export function IssuerField({ index }: CertificationFieldProps) {
 }
 
 export function CertificationDateField({ index }: CertificationFieldProps) {
-    const form = useFormContext<Resume>();
-
     return (
-        <FormField
-            control={form.control}
+        <MonthYearPicker
             name={`certificates.${index}.date`}
-            render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Date Earned</FormLabel>
-                    <FormControl>
-                        <Input type="date" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-            )}
+            label="Date Earned"
         />
     );
 }
@@ -89,7 +79,7 @@ export function CertificationUrlField({ index }: CertificationFieldProps) {
                     <FormLabel>Certificate URL (Optional)</FormLabel>
                     <FormControl>
                         <Input
-                            placeholder="https://credly.com/badges/..."
+                            placeholder="e.g., https://aws.amazon.com/certification"
                             {...field}
                         />
                     </FormControl>
