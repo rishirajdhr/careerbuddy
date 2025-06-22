@@ -4,14 +4,21 @@ import {
     FormControl,
     FormField,
     FormItem,
-    FormLabel,
     FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, FileText } from "lucide-react";
+import type { ReactNode } from "react";
+import { Card } from "@/components/ui/card";
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const jobDescriptionSchema = z.object({
     jobDescription: z.string().min(1, "Job description is required"),
@@ -43,25 +50,22 @@ export function JobDescriptionForm({
     };
 
     return (
-        <div className="space-y-6">
-            <div className="text-left">
-                <h3 className="text-xl font-semibold">Job Description</h3>
-                <p className="text-sm text-muted-foreground">
-                    Paste the job description to tailor your resume
-                </p>
-            </div>
-
-            <Form {...form}>
-                <form
-                    onSubmit={form.handleSubmit(handleSubmit)}
-                    className="space-y-6"
+        <Form {...form}>
+            <form
+                onSubmit={form.handleSubmit(handleSubmit)}
+                className="space-y-6"
+            >
+                <ProfileSection
+                    id="job-description"
+                    title="Job Description"
+                    description="Paste the job description to tailor your resume"
+                    icon={<FileText className="h-5 w-5" />}
                 >
                     <FormField
                         control={form.control}
                         name="jobDescription"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Job Description</FormLabel>
                                 <FormControl>
                                     <Textarea
                                         {...field}
@@ -73,28 +77,74 @@ export function JobDescriptionForm({
                             </FormItem>
                         )}
                     />
+                </ProfileSection>
 
-                    <div className="flex justify-between border-t pt-6">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={onBack}
-                            className="flex items-center space-x-2"
-                        >
-                            <ChevronLeft className="h-4 w-4" />
-                            <span>Previous</span>
-                        </Button>
+                <div className="flex justify-between border-t pt-6">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={onBack}
+                        className="flex items-center space-x-2"
+                    >
+                        <ChevronLeft className="h-4 w-4" />
+                        <span>Previous</span>
+                    </Button>
 
-                        <Button
-                            type="submit"
-                            className="flex items-center space-x-2"
-                        >
-                            <span>Generate Resume</span>
-                            <ChevronRight className="h-4 w-4" />
-                        </Button>
-                    </div>
-                </form>
-            </Form>
-        </div>
+                    <Button
+                        type="submit"
+                        className="flex items-center space-x-2"
+                    >
+                        <span>Generate Resume</span>
+                        <ChevronRight className="h-4 w-4" />
+                    </Button>
+                </div>
+            </form>
+        </Form>
+    );
+}
+
+interface ProfileSectionProps {
+    id: string;
+    title: string;
+    description: string;
+    icon: ReactNode;
+    children: ReactNode;
+}
+
+function ProfileSection({
+    id,
+    title,
+    description,
+    icon,
+    children,
+}: ProfileSectionProps) {
+    return (
+        <Card id={id} className="py-2">
+            <Accordion
+                type="single"
+                collapsible
+                defaultValue={id}
+                className="w-full"
+            >
+                <AccordionItem value={id} className="border-none">
+                    <AccordionTrigger className="px-6 py-4 text-xl font-semibold hover:no-underline [&>svg]:mt-2 [&>svg]:size-6">
+                        <div className="flex items-center gap-3">
+                            <div className="grid size-12 place-items-center rounded-full bg-blue-600 text-white">
+                                {icon}
+                            </div>
+                            <div className="text-left">
+                                <div>{title}</div>
+                                <div className="text-sm font-normal text-muted-foreground">
+                                    {description}
+                                </div>
+                            </div>
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                        <div className="px-6 pt-4 pb-6">{children}</div>
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
+        </Card>
     );
 }
