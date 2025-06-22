@@ -44,15 +44,6 @@ export function Header() {
                             </Link>
                         ))}
                     </nav>
-
-                    {/* Guest Mode Indicator - Right */}
-                    <div className="flex items-center">
-                        <div className="flex items-center space-x-2 rounded-full bg-gray-100 px-3 py-1">
-                            <span className="text-xs font-medium text-gray-600">
-                                Guest Mode
-                            </span>
-                        </div>
-                    </div>
                 </div>
             </div>
         </header>

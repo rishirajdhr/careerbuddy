@@ -18,6 +18,8 @@ import {
     FileText,
     User,
     RotateCcw,
+    Wrench,
+    Trophy,
 } from "lucide-react";
 import {
     useForm,
@@ -378,7 +380,7 @@ function Skills() {
             id="skills"
             title="Skills"
             description="Your technical and professional skills"
-            icon={<Code className="h-5 w-5" />}
+            icon={<Wrench className="h-5 w-5" />}
         >
             <SkillsSearchField />
         </ProfileSection>
@@ -477,7 +479,7 @@ function Certifications() {
             id="certificates"
             title="Certifications"
             description="Your professional certifications"
-            icon={<Award className="h-5 w-5" />}
+            icon={<Trophy className="h-5 w-5" />}
         >
             <div className="space-y-4">
                 {fields.map((field, index) => (
@@ -795,7 +797,7 @@ export const RESUME_SECTIONS = [
         id: "skills",
         title: "Skills",
         description: "Your technical and professional skills",
-        icon: <Code className="h-3 w-3" />,
+        icon: <Wrench className="h-3 w-3" />,
         component: Skills,
         optional: false,
     },
@@ -811,7 +813,7 @@ export const RESUME_SECTIONS = [
         id: "certificates",
         title: "Certifications",
         description: "Your professional certifications",
-        icon: <Award className="h-3 w-3" />,
+        icon: <Trophy className="h-3 w-3" />,
         component: Certifications,
         optional: true,
     },

@@ -8,6 +8,7 @@ import {
     MapPin,
     Globe,
     Github,
+    ExternalLink,
 } from "lucide-react";
 import { Resume } from "@/lib/schema";
 
@@ -203,9 +204,9 @@ export function ResumePreview({ resumeData, onBack }: ResumePreviewProps) {
                                             href={project.url}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="text-blue-600 hover:underline"
+                                            className="text-blue-600 hover:text-blue-800 inline-flex items-center"
                                         >
-                                            {project.url}
+                                            <ExternalLink className="h-4 w-4" />
                                         </a>
                                     )}
                                     <p className="mt-2 text-gray-700">
