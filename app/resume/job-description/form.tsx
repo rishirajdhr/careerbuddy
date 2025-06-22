@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { ChevronLeft, ChevronRight, FileText } from "lucide-react";
+import { ChevronLeft, ChevronRight, FileText, Loader2 } from "lucide-react";
 import type { ReactNode } from "react";
 import { Card } from "@/components/ui/card";
 import {
@@ -31,6 +31,7 @@ interface JobDescriptionFormProps {
     onUpdate: (jobDescription: string) => void;
     onNext: () => void;
     onBack: () => void;
+    isGenerating?: boolean;
 }
 
 export function JobDescriptionForm({
@@ -38,6 +39,7 @@ export function JobDescriptionForm({
     onUpdate,
     onNext,
     onBack,
+    isGenerating = false,
 }: JobDescriptionFormProps) {
     const form = useForm<JobDescriptionFormData>({
         resolver: zodResolver(jobDescriptionSchema),
@@ -47,6 +49,11 @@ export function JobDescriptionForm({
     const handleSubmit = (data: JobDescriptionFormData) => {
         onUpdate(data.jobDescription);
         onNext();
+    };
+
+    const handleBackClick = () => {
+        onUpdate(form.getValues("jobDescription"));
+        onBack();
     };
 
     return (
@@ -83,7 +90,7 @@ export function JobDescriptionForm({
                     <Button
                         type="button"
                         variant="outline"
-                        onClick={onBack}
+                        onClick={handleBackClick}
                         className="flex items-center space-x-2"
                     >
                         <ChevronLeft className="h-4 w-4" />
@@ -93,9 +100,15 @@ export function JobDescriptionForm({
                     <Button
                         type="submit"
                         className="flex items-center space-x-2"
+                        disabled={isGenerating}
                     >
-                        <span>Generate Resume</span>
-                        <ChevronRight className="h-4 w-4" />
+                        {isGenerating && (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        )}
+                        <span>
+                            {isGenerating ? "Generating..." : "Generate Resume"}
+                        </span>
+                        {!isGenerating && <ChevronRight className="h-4 w-4" />}
                     </Button>
                 </div>
             </form>

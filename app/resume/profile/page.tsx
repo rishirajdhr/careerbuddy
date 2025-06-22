@@ -6,6 +6,7 @@ import { Resume, ResumeSchema } from "@/lib/schema";
 import { ProfileForm, RESUME_SECTIONS as ALL_SECTIONS } from "./form";
 import { SectionManager } from "./section-manager";
 import { profileFormDefaultValues } from "./default-values";
+import { useResume } from "../resume-provider";
 
 type SectionWithState = (typeof ALL_SECTIONS)[number] & {
     enabled: boolean;
@@ -121,11 +122,10 @@ export default function ProfilePage() {
     const router = useRouter();
     const [sections, setSections] =
         useState<SectionWithState[]>(initialSections);
-    const [formData, setFormData] = useState<Resume>(profileFormDefaultValues);
+    const { profile, updateProfile } = useResume();
 
     const handleNext = (data: Resume) => {
-        // Save form data (you can use context or localStorage here)
-        setFormData(data);
+        updateProfile(data);
         router.push("/resume/job-description");
     };
 
@@ -145,8 +145,8 @@ export default function ProfilePage() {
 
             <main className="w-2/3">
                 <ProfileForm
-                    data={formData}
-                    onUpdate={setFormData}
+                    data={profile}
+                    onUpdate={updateProfile}
                     onNext={handleNext}
                     enabledSections={enabledSections}
                 />
