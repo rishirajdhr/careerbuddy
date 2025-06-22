@@ -42,3 +42,6 @@ next-env.d.ts
 
 # VS Code
 .vscode
+
+# Guys, seriously, just use PNPM!!!
+package-lock.json
