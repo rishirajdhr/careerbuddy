@@ -3,7 +3,7 @@
 import React from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Roadmap, RoadmapSchema } from "@/lib/roadmap-schema";
+import { CareerInformation, CareerInformationSchema } from "@/lib/roadmap-schema";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
@@ -11,12 +11,12 @@ import { CareerInfoCard } from "./cards/careerinfo";
 import { CareerGoalsCard } from "./cards/careergoals";
 
 interface CareerInformationFormProps {
-    data: Roadmap;
-    onUpdate: (data: Partial<Roadmap>) => void;
-    onNext: (data: Roadmap) => void;
+    data: CareerInformation;
+    onUpdate: (data: Partial<CareerInformation>) => void;
+    onNext: (data: CareerInformation) => void;
 }
 
-const defaultValues: Roadmap = {
+const defaultValues: CareerInformation = {
     currentRole: "",
     experience: "",
     careerGoal: "",
@@ -29,12 +29,12 @@ export function CareerInformationForm({
     onUpdate,
     onNext,
 }: CareerInformationFormProps) {
-    const form = useForm<Roadmap>({
-        resolver: zodResolver(RoadmapSchema),
+    const form = useForm<CareerInformation>({
+        resolver: zodResolver(CareerInformationSchema),
         defaultValues: data || defaultValues,
     });
 
-    const handleSubmit = (formData: Roadmap) => {
+    const handleSubmit = (formData: CareerInformation) => {
         onUpdate(formData);
         onNext(formData);
     };

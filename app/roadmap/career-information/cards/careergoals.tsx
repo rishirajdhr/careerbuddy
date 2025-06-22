@@ -13,10 +13,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Target } from "lucide-react";
 import { useFormContext } from "react-hook-form";
-import { Roadmap } from "@/lib/roadmap-schema";
+import { CareerInformation } from "@/lib/roadmap-schema";
 
 function CareerGoalField() {
-    const form = useFormContext<Roadmap>();
+    const form = useFormContext<CareerInformation>();
     return (
         <FormField
             control={form.control}
@@ -39,7 +39,7 @@ function CareerGoalField() {
 }
 
 function JobDescriptionField() {
-    const form = useFormContext<Roadmap>();
+    const form = useFormContext<CareerInformation>();
     return (
         <FormField
             control={form.control}

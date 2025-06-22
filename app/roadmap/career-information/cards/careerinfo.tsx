@@ -12,10 +12,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { User } from "lucide-react";
 import { useFormContext } from "react-hook-form";
-import { Roadmap } from "@/lib/roadmap-schema";
+import { CareerInformation } from "@/lib/roadmap-schema";
 
 function CurrentRoleField() {
-    const form = useFormContext<Roadmap>();
+    const form = useFormContext<CareerInformation>();
     return (
         <FormField
             control={form.control}
@@ -38,7 +38,7 @@ function CurrentRoleField() {
 }
 
 function ExperienceField() {
-    const form = useFormContext<Roadmap>();
+    const form = useFormContext<CareerInformation>();
     return (
         <FormField
             control={form.control}

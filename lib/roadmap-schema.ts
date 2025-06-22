@@ -35,6 +35,26 @@ const StepSchema = z.object({
   suggestions: z.array(z.string().describe("Extra suggestions such as project ideas or communities to join")).optional()
 })
 
+// Input schema for career information form
+export const CareerInformationSchema = z.object({
+  /** Current role of the user */
+  currentRole: z.string().min(1, "Current role is required"),
+  
+  /** Years of experience */
+  experience: z.string().min(1, "Experience is required"),
+  
+  /** Target career goal */
+  careerGoal: z.string().min(1, "Career goal is required"),
+  
+  /** Timeline for achieving the goal */
+  timeline: z.string().optional(),
+  
+  /** Job description of target role */
+  jobDescription: z.string().optional(),
+});
+
+export type CareerInformation = z.infer<typeof CareerInformationSchema>;
+
 export const RoadmapSchema = z.object({
 
   /** A title for the roadmap */
@@ -58,3 +78,5 @@ export const RoadmapSchema = z.object({
   /** Any alternative pathways to reach the profession */
   alternativePathway: z.array(StepSchema).describe("An alternative pathway to reach the profession").optional(),
 })
+
+export type Roadmap = z.infer<typeof RoadmapSchema>;
