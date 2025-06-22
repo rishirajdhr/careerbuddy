@@ -134,8 +134,8 @@ export default function ProfilePage() {
         .sort((a, b) => a.order - b.order);
 
     return (
-        <div className="grid grid-cols-12 gap-8">
-            <aside className="sticky top-24 col-span-2 h-screen">
+        <div className="grid place-items-center">
+            <aside className="fixed top-52 left-24 w-1/6 px-4">
                 <ProfileSectionManager
                     sections={sections}
                     setSections={setSections}
@@ -143,15 +143,14 @@ export default function ProfilePage() {
                 />
             </aside>
 
-            <div className="col-span-8">
+            <main className="w-2/3">
                 <ProfileForm
                     data={formData}
                     onUpdate={setFormData}
                     onNext={handleNext}
                     enabledSections={enabledSections}
                 />
-            </div>
-            <div className="col-span-2" />
+            </main>
         </div>
     );
 }
