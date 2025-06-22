@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Application } from "./types"
-import { getCurrentUser, fileToBase64, base64ToFile, generateInterviewQuestions, defaultApplications } from "./utils"
+import { getCurrentUser, generateInterviewQuestions, defaultApplications } from "./utils"
+import { fileToBase64, base64ToFile } from "@/lib/utils"
 import { ApplicationFilters } from "./components/application-filters"
 import { ApplicationTable } from "./components/application-table"
 import { ApplicationForm } from "./components/application-form"
@@ -18,6 +19,7 @@ export default function DashboardPage() {
     const [statusFilter, setStatusFilter] = useState("all")
     const [isFormOpen, setIsFormOpen] = useState(false)
     const [editingApplication, setEditingApplication] = useState<Application | null>(null)
+    const [isGenerating, setIsGenerating] = useState<number | null>(null)
 
     // Load data on mount
     useEffect(() => {
@@ -49,7 +51,8 @@ export default function DashboardPage() {
     const filteredApplications = applications.filter((app) => {
         const matchesSearch =
             app.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            app.position.toLowerCase().includes(searchTerm.toLowerCase())
+            app.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (app.role && app.role.toLowerCase().includes(searchTerm.toLowerCase()))
         const matchesStatus = statusFilter === "all" || app.status === statusFilter
         return matchesSearch && matchesStatus
     })
@@ -77,11 +80,6 @@ export default function DashboardPage() {
 
     const handleAddApplication = () => {
         setEditingApplication(null)
-        setIsFormOpen(true)
-    }
-
-    const handleEditApplication = (app: Application) => {
-        setEditingApplication(app)
         setIsFormOpen(true)
     }
 
@@ -113,34 +111,45 @@ export default function DashboardPage() {
         }
     }
 
-    const handleGenerateInterviewQuestions = (application: Application) => {
-        const generatedQuestions = generateInterviewQuestions(application)
-        const storageKey = user ? `customInterviewQuestions_${user.email}` : "customInterviewQuestions"
-        
-        localStorage.setItem(
-            storageKey,
-            JSON.stringify({
-                applicationId: application.id,
-                company: application.company,
-                position: application.position,
-                questions: generatedQuestions,
-                generatedAt: new Date().toISOString(),
-            })
-        )
+    const handleGenerateInterviewQuestions = async (application: Application) => {
+        if (!application.jobDescription || !application.userProfile) {
+            alert("This application is missing the job description or user profile needed to generate questions. Please create it via the Resume Builder.");
+            return;
+        }
 
-        router.push("/interview-prep?mode=custom")
-    }
+        setIsGenerating(application.id);
 
-    const handleDownloadResume = (app: Application) => {
-        if (app.resumeFile) {
-            const url = URL.createObjectURL(app.resumeFile)
-            const a = document.createElement('a')
-            a.href = url
-            a.download = app.resumeFileName
-            document.body.appendChild(a)
-            a.click()
-            document.body.removeChild(a)
-            URL.revokeObjectURL(url)
+        try {
+            const response = await fetch('/api/interview-prep', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    jobDescription: application.jobDescription,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to generate interview questions.');
+            }
+
+            const result = await response.json();
+
+            if (result.success && result.questions) {
+                // Store questions in localStorage, keyed by application ID
+                const storageKey = `interview_questions_${application.id}`;
+                localStorage.setItem(storageKey, JSON.stringify(result.questions));
+                
+                // Redirect to interview prep page
+                router.push(`/interview-prep?appId=${application.id}`);
+            } else {
+                throw new Error(result.error || 'An unknown error occurred.');
+            }
+
+        } catch (error) {
+            console.error(error);
+            alert((error as Error).message);
+        } finally {
+            setIsGenerating(null);
         }
     }
 
@@ -156,10 +165,9 @@ export default function DashboardPage() {
             <ApplicationTable
                 applications={filteredApplications}
                 onAddApplication={handleAddApplication}
-                onEditApplication={handleEditApplication}
                 onDeleteApplication={handleDeleteApplication}
                 onGenerateQuestions={handleGenerateInterviewQuestions}
-                onDownloadResume={handleDownloadResume}
+                isGeneratingId={isGenerating}
             />
 
             <ApplicationForm

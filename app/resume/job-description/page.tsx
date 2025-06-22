@@ -13,6 +13,7 @@ export default function JobDescriptionPage() {
         jobDescription,
         updateJobDescription,
         updateGeneratedResume,
+        updateJobInfo,
     } = useResume();
     const [isGenerating, setIsGenerating] = useState(false);
 
@@ -41,6 +42,12 @@ export default function JobDescriptionPage() {
             const data = await response.json();
             if (data.success && data.resume) {
                 updateGeneratedResume(data.resume);
+                
+                // Update job information if available
+                if (data.company && data.role) {
+                    updateJobInfo(data.company, data.role);
+                }
+                
                 router.push("/resume/preview");
             } else {
                 throw new Error(data.error || "Failed to generate resume");

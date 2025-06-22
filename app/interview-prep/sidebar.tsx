@@ -2,15 +2,28 @@
 
 import Link from "next/link";
 import { Lightbulb } from "lucide-react";
-import { interviewTips, interviewQuestionsData, allQuestions, Question, Category } from "./data";
 import { Button } from "@/components/ui/button";
+import { QuestionSchema } from "@/lib/questionSchema";
+import { z } from "zod";
+
+const QuestionWithAnswerSchema = QuestionSchema.extend({
+    userAnswer: z.string(),
+});
+type QuestionWithAnswer = z.infer<typeof QuestionWithAnswerSchema>;
 
 interface InterviewPrepSidebarProps {
-    selectedQuestion: Question & { category: Category };
+    questions: QuestionWithAnswer[];
+    selectedQuestion: QuestionWithAnswer;
     onQuestionSelect: (index: number) => void;
 }
 
-export function InterviewPrepSidebar({ selectedQuestion, onQuestionSelect }: InterviewPrepSidebarProps) {
+const interviewTips = [
+    { title: "Research the Company", content: "Know their mission, products, and recent news.", borderColor: "border-blue-400", textColor: "text-blue-800" },
+    { title: "Use the STAR Method", content: "Structure answers using Situation, Task, Action, Result for behavioral questions.", borderColor: "border-green-400", textColor: "text-green-800" },
+    { title: "Prepare Your Questions", content: "Have thoughtful questions ready to ask the interviewer.", borderColor: "border-purple-400", textColor: "text-purple-800" },
+];
+
+export function InterviewPrepSidebar({ questions, selectedQuestion, onQuestionSelect }: InterviewPrepSidebarProps) {
     return (
         <aside className="w-80 flex-shrink-0 overflow-y-auto border-r border-gray-200 bg-white p-6">
             <div className="space-y-8">
@@ -37,32 +50,29 @@ export function InterviewPrepSidebar({ selectedQuestion, onQuestionSelect }: Int
                     </div>
                 </div>
 
-                {Object.entries(interviewQuestionsData).map(([category, questions]) => (
-                    <div key={category}>
-                        <h3 className="mb-3 text-base font-semibold capitalize text-gray-800">
-                            {category.replace(/([A-Z])/g, ' $1').toLowerCase()}
-                        </h3>
-                        <ul className="space-y-1">
-                            {questions.map((q) => {
-                                const globalIndex = allQuestions.findIndex(item => item.id === q.id);
-                                const isSelected = selectedQuestion.id === q.id;
-                                return (
-                                    <li key={q.id}>
-                                        <button
-                                            onClick={() => onQuestionSelect(globalIndex)}
-                                            className={`w-full rounded-md p-2 text-left text-sm transition-colors ${isSelected
-                                                    ? "bg-blue-50 text-blue-600 font-semibold"
-                                                    : "text-gray-600 hover:bg-gray-100"
-                                                }`}
-                                        >
-                                            {q.question}
-                                        </button>
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                    </div>
-                ))}
+                <div>
+                    <h3 className="mb-3 text-base font-semibold capitalize text-gray-800">
+                        Generated Questions
+                    </h3>
+                    <ul className="space-y-1">
+                        {questions.map((q, index) => {
+                            const isSelected = selectedQuestion.question === q.question;
+                            return (
+                                <li key={q.question}>
+                                    <button
+                                        onClick={() => onQuestionSelect(index)}
+                                        className={`w-full rounded-md p-2 text-left text-sm transition-colors ${isSelected
+                                                ? "bg-blue-50 text-blue-600 font-semibold"
+                                                : "text-gray-600 hover:bg-gray-100"
+                                            }`}
+                                    >
+                                        {q.question}
+                                    </button>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                </div>
             </div>
         </aside>
     );

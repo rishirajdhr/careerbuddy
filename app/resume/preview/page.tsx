@@ -1,12 +1,27 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { ResumePreview } from "./resume-preview";
 import { useResume } from "../resume-provider";
 
 export default function PreviewPage() {
     const router = useRouter();
-    const { generatedResume } = useResume();
+    const { 
+        generatedResume, 
+        company, 
+        role, 
+        jobDescription, 
+        profile,
+        saveToApplications 
+    } = useResume();
+
+    // Save to applications when component mounts
+    useEffect(() => {
+        if (generatedResume && company && role) {
+            saveToApplications();
+        }
+    }, [generatedResume, company, role, saveToApplications]);
 
     const handleBack = () => {
         router.push("/resume/job-description");

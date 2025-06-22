@@ -1,59 +1,176 @@
 "use client";
 
 import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle, Lightbulb } from 'lucide-react';
+import { Lightbulb, Loader2 } from 'lucide-react';
+import { z } from "zod";
+import { QuestionSchema } from '@/lib/questionSchema';
+import { Application } from '@/app/dashboard/types';
 
-const mockInterviewQuestions = [
-    {
-        question: "Tell me about yourself.",
-        feedback: "A good answer to this question should be a brief, 1-2 minute pitch that connects your experience and skills to the role you're applying for. Try to use the 'Present, Past, Future' model to structure your answer."
-    },
-    {
-        question: "What are your biggest strengths and weaknesses?",
-        feedback: "For strengths, choose qualities that are relevant to the job and back them up with specific examples. For weaknesses, be honest but choose a real weakness you've been actively working to improve. Show self-awareness."
-    },
-    {
-        question: "Describe a challenging situation you've faced at work and how you handled it.",
-        feedback: "The STAR method (Situation, Task, Action, Result) is perfect for this. Be specific about the challenge and focus on the actions *you* took and the positive outcome."
-    },
-    {
-        question: "Where do you see yourself in 5 years?",
-        feedback: "Your answer should show ambition and a desire for growth, while also aligning with the opportunities available at this company. It's good to show you've thought about your career path."
-    },
-    {
-        question: "Do you have any questions for us?",
-        feedback: "Always have a few thoughtful questions prepared. Asking about the team, the company culture, or the challenges of the role shows genuine interest. Avoid asking about salary or benefits until you have an offer."
-    }
-];
+const MOCK_INTERVIEW_STORAGE_KEY = 'mockInterviewState';
+
+const QuestionWithAnswerSchema = QuestionSchema.extend({
+    userAnswer: z.string(),
+});
+type QuestionWithAnswer = z.infer<typeof QuestionWithAnswerSchema>;
+
+// Define the structure for the feedback from the API
+const FeedbackSchema = z.object({
+  feedback: z.string(),
+  question: z.string(),
+});
+type Feedback = z.infer<typeof FeedbackSchema>;
+
+interface MockInterviewState {
+    questions: QuestionWithAnswer[];
+    answers: string[];
+    currentQuestionIndex: number;
+}
 
 export default function MockInterviewPage() {
-  const [interviewStarted, setInterviewStarted] = useState(false);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<string[]>(new Array(mockInterviewQuestions.length).fill(''));
-  const [isCompleted, setIsCompleted] = useState(false);
+  const searchParams = useSearchParams();
+  const appId = searchParams.get('appId');
 
-  const handleNextQuestion = () => {
-    if (currentQuestionIndex < mockInterviewQuestions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-    } else {
-      setIsCompleted(true);
+  const [interviewStarted, setInterviewStarted] = useState(false);
+  const [questions, setQuestions] = useState<QuestionWithAnswer[]>([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [answers, setAnswers] = useState<string[]>([]);
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [feedback, setFeedback] = useState<Feedback[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  const startInterview = async () => {
+    // Always start fresh: clear any previous state and fetch new questions.
+    localStorage.removeItem(MOCK_INTERVIEW_STORAGE_KEY);
+    setIsLoading(true);
+    setError(null);
+
+    // Get the role from the application in localStorage
+    let role = "Software Engineer"; // Default role
+    if (appId) {
+        const storedApps = localStorage.getItem("applications");
+        if (storedApps) {
+            const apps: Application[] = JSON.parse(storedApps);
+            const currentApp = apps.find(app => app.id.toString() === appId);
+            if (currentApp) {
+                role = currentApp.position;
+            } else {
+                setError("Could not find the application details.");
+                setIsLoading(false);
+                return;
+            }
+        }
+    }
+    
+    try {
+        const response = await fetch('/api/generate-interview-questions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ role }),
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to generate new questions.");
+        }
+        const result = await response.json();
+        if (result.success && result.questions) {
+            const newQuestions = result.questions.map((q: z.infer<typeof QuestionSchema>) => ({ ...q, userAnswer: '' }));
+            const newAnswers = new Array(result.questions.length).fill('');
+            setQuestions(newQuestions);
+            setAnswers(newAnswers);
+            setInterviewStarted(true);
+
+            // Save initial state to localStorage for the current session
+            const newState: MockInterviewState = { questions: newQuestions, answers: newAnswers, currentQuestionIndex: 0 };
+            localStorage.setItem(MOCK_INTERVIEW_STORAGE_KEY, JSON.stringify(newState));
+        } else {
+            throw new Error(result.error || "An unknown error occurred while generating questions.");
+        }
+    } catch (err) {
+        setError((err as Error).message);
+    } finally {
+        setIsLoading(false);
     }
   };
+
+  const handleNextQuestion = () => {
+    if (currentQuestionIndex < questions.length - 1) {
+        const nextIndex = currentQuestionIndex + 1;
+        setCurrentQuestionIndex(nextIndex);
+        // Save new index to localStorage
+        const savedState = JSON.parse(localStorage.getItem(MOCK_INTERVIEW_STORAGE_KEY) || '{}');
+        savedState.currentQuestionIndex = nextIndex;
+        localStorage.setItem(MOCK_INTERVIEW_STORAGE_KEY, JSON.stringify(savedState));
+    } else {
+      handleFinishInterview();
+    }
+  };
+
+  const handleFinishInterview = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    // Get final Q&A from localStorage
+    const savedState = localStorage.getItem(MOCK_INTERVIEW_STORAGE_KEY);
+    if (!savedState) {
+        setError("Could not retrieve interview data. Please try again.");
+        setIsLoading(false);
+        return;
+    }
+    const { questions, answers } = JSON.parse(savedState) as MockInterviewState;
+
+    const questionsAndAnswers = questions.map((q, i) => ({
+      question: q.question,
+      answer: answers[i]
+    }));
+
+    try {
+      const response = await fetch('/api/generate-answer-improvements', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ questionsAndAnswers }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get feedback from the API.');
+      }
+      const result = await response.json();
+      setFeedback(result.feedback);
+      setIsCompleted(true);
+      localStorage.removeItem(MOCK_INTERVIEW_STORAGE_KEY); // Clean up on success
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
 
   const handleAnswerChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newAnswers = [...answers];
     newAnswers[currentQuestionIndex] = e.target.value;
     setAnswers(newAnswers);
+    
+    // Save updated state to localStorage
+    const newState: MockInterviewState = { questions, answers: newAnswers, currentQuestionIndex };
+    localStorage.setItem(MOCK_INTERVIEW_STORAGE_KEY, JSON.stringify(newState));
   };
   
   const restartInterview = () => {
     setInterviewStarted(false);
     setCurrentQuestionIndex(0);
-    setAnswers(new Array(mockInterviewQuestions.length).fill(''));
+    setAnswers([]);
+    setQuestions([]);
     setIsCompleted(false);
+    setFeedback([]);
+    setError(null);
+    localStorage.removeItem(MOCK_INTERVIEW_STORAGE_KEY);
   }
 
   if (!interviewStarted) {
@@ -61,10 +178,13 @@ export default function MockInterviewPage() {
         <div className="flex h-[calc(100vh-10rem)] flex-col items-center justify-center text-center">
             <h1 className="text-3xl font-bold mb-4">Mock Interview</h1>
             <div className="text-lg text-muted-foreground mb-8 max-w-md">
-                <p>This will simulate a real, 5-question interview.</p>
-                <p>You will get feedback on your answers at the end.</p>
+                <p>Click Start to generate 5 random questions for your role.</p>
+                <p>You will get personalized feedback on your answers at the end.</p>
             </div>
-            <Button onClick={() => setInterviewStarted(true)} size="lg">Start</Button>
+            {error && <p className="text-red-500 mb-4">{error}</p>}
+            <Button onClick={startInterview} size="lg" disabled={isLoading}>
+                {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating...</> : 'Start'}
+            </Button>
         </div>
     )
   }
@@ -81,8 +201,9 @@ export default function MockInterviewPage() {
                     <h2 className="text-3xl font-bold">Interview Summary</h2>
                     <p className="text-muted-foreground mt-2">Here is a summary of your answers and feedback for each question.</p>
                 </div>
+                {error && <p className="text-red-500 text-center">{error}</p>}
                 <div className='space-y-6'>
-                {mockInterviewQuestions.map((item, index) => (
+                {feedback.map((item, index) => (
                     <Card key={index}>
                         <CardHeader>
                             <CardTitle className="text-lg">{item.question}</CardTitle>
@@ -92,7 +213,7 @@ export default function MockInterviewPage() {
                                 <div>
                                     <h4 className="font-semibold mb-2 text-gray-800">Your Answer:</h4>
                                     <p className="text-gray-700 p-4 bg-gray-50 rounded-md whitespace-pre-wrap">
-                                        {answers[index] || <span className="text-gray-400">No answer provided.</span>}
+                                        {answers[questions.findIndex(q => q.question === item.question)] || <span className="text-gray-400">No answer provided.</span>}
                                     </p>
                                 </div>
                                 <div className="p-4 bg-yellow-50 border-l-4 border-yellow-400">
@@ -117,12 +238,12 @@ export default function MockInterviewPage() {
             <div className="mx-auto max-w-2xl">
                 <Card>
                     <CardHeader>
-                    <CardTitle>Question {currentQuestionIndex + 1} of {mockInterviewQuestions.length}</CardTitle>
+                    <CardTitle>Question {currentQuestionIndex + 1} of {questions.length}</CardTitle>
                     </CardHeader>
                     <CardContent>
                     <div className="space-y-6">
                         <p className="text-lg font-semibold text-gray-800">
-                        {mockInterviewQuestions[currentQuestionIndex].question}
+                        {questions[currentQuestionIndex].question}
                         </p>
                         <div>
                         <Textarea
@@ -134,8 +255,12 @@ export default function MockInterviewPage() {
                         />
                         </div>
                         <div className="flex justify-end">
-                        <Button onClick={handleNextQuestion}>
-                            {currentQuestionIndex === mockInterviewQuestions.length - 1 ? 'Finish' : 'Next Question'}
+                        <Button onClick={handleNextQuestion} disabled={isLoading}>
+                            {isLoading && currentQuestionIndex === questions.length - 1 ? (
+                              <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Finishing...</>
+                            ) : (
+                              currentQuestionIndex === questions.length - 1 ? 'Finish' : 'Next Question'
+                            )}
                         </Button>
                         </div>
                     </div>
