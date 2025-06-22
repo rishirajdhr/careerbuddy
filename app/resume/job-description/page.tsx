@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { JobDescriptionForm } from "./form";
 import { useResume } from "../resume-provider";
-import { Resume } from "@/lib/schema";
+import { sanitizeResumeForApi } from "@/app/resume/utils";
 
 export default function JobDescriptionPage() {
     const router = useRouter();
@@ -23,15 +23,7 @@ export default function JobDescriptionPage() {
 
         setIsGenerating(true);
         try {
-            const cleanedProfile = JSON.parse(
-                JSON.stringify(profile),
-                (key, value) => {
-                    if (key.toLowerCase().includes("date") && value === "") {
-                        return undefined;
-                    }
-                    return value;
-                },
-            );
+            const cleanedProfile = sanitizeResumeForApi(profile);
 
             const response = await fetch("/api/generate-resume", {
                 method: "POST",
