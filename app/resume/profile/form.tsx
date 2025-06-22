@@ -874,6 +874,7 @@ export function ProfileForm({
     const form = useForm<Resume>({
         resolver: zodResolver(ResumeSchema),
         defaultValues: data,
+        shouldUnregister: true,
     });
 
     const handleSubmit = (formData: Resume) => {
