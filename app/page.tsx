@@ -9,7 +9,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, Map, ClipboardList, Users } from "lucide-react";
+import { FileText, Map, ClipboardList } from "lucide-react";
 
 const features = [
     {
