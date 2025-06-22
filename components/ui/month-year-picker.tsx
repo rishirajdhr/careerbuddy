@@ -48,44 +48,18 @@ export function MonthYearPicker({ name, label }: MonthYearPickerProps) {
         <FormField
             name={name}
             render={({ field }) => {
-                const [month, setMonth] = useState("");
-                const [year, setYear] = useState("");
+                const [year = "", month = ""] = field.value?.split("-") || [];
 
-                // Parse existing value on mount
-                useEffect(() => {
-                    if (field.value) {
-                        const parts = field.value.split("-");
-                        if (parts.length >= 2) {
-                            setMonth(parts[1]);
-                            setYear(parts[0]);
-                        } else if (
-                            parts.length === 1 &&
-                            parts[0].length === 4
-                        ) {
-                            setYear(parts[0]);
-                        }
-                    }
-                }, [field.value]);
-
-                // Update form value when month or year changes
-                const updateFormValue = (newMonth: string, newYear: string) => {
-                    if (newMonth && newYear) {
-                        field.onChange(`${newYear}-${newMonth}`);
-                    } else if (newYear) {
-                        field.onChange(newYear);
-                    } else {
-                        field.onChange("");
-                    }
+                const handleMonthChange = (newMonth: string) => {
+                    const newValue = year
+                        ? `${year}-${newMonth}`
+                        : `-${newMonth}`;
+                    field.onChange(newValue);
                 };
 
-                const handleMonthChange = (value: string) => {
-                    setMonth(value);
-                    updateFormValue(value, year);
-                };
-
-                const handleYearChange = (value: string) => {
-                    setYear(value);
-                    updateFormValue(month, value);
+                const handleYearChange = (newYear: string) => {
+                    const newValue = month ? `${newYear}-${month}` : newYear;
+                    field.onChange(newValue);
                 };
 
                 return (

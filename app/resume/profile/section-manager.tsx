@@ -249,6 +249,7 @@ export function SectionManager({
             </div>
             <div className="flex-1 overflow-y-auto">
                 <DndContext
+                    id="section-manager-dnd-context"
                     sensors={sensors}
                     collisionDetection={closestCenter}
                     onDragStart={handleDragStart}
