@@ -135,7 +135,7 @@ export default function ProfilePage() {
 
     return (
         <div className="grid place-items-center">
-            <aside className="fixed top-52 left-24 w-1/6 px-4">
+            <aside className="fixed top-1/4 left-4 w-1/6 px-4 2xl:left-12">
                 <ProfileSectionManager
                     sections={sections}
                     setSections={setSections}
