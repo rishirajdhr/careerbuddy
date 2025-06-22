@@ -8,7 +8,6 @@ import { Users } from "lucide-react";
 const navigationLinks = [
     { href: "/resume", label: "Resume Generator" },
     { href: "/roadmap", label: "Career Roadmap" },
-    { href: "/tracker", label: "Application Tracker" },
 ];
 
 export function Header() {
