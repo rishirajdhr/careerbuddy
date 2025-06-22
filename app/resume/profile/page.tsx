@@ -122,10 +122,10 @@ export default function ProfilePage() {
     const router = useRouter();
     const [sections, setSections] =
         useState<SectionWithState[]>(initialSections);
-    const { resume, updateResume } = useResume();
+    const { profile, updateProfile } = useResume();
 
     const handleNext = (data: Resume) => {
-        updateResume(data);
+        updateProfile(data);
         router.push("/resume/job-description");
     };
 
@@ -145,8 +145,8 @@ export default function ProfilePage() {
 
             <main className="w-2/3">
                 <ProfileForm
-                    data={resume}
-                    onUpdate={updateResume}
+                    data={profile}
+                    onUpdate={updateProfile}
                     onNext={handleNext}
                     enabledSections={enabledSections}
                 />

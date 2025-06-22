@@ -5,21 +5,21 @@ import { Resume } from "@/lib/schema";
 import { profileFormDefaultValues } from "./profile/default-values";
 
 interface ResumeContextType {
-    resume: Resume;
-    updateResume: (newResume: Partial<Resume>) => void;
+    profile: Resume;
+    updateProfile: (newProfile: Partial<Resume>) => void;
 }
 
 const ResumeContext = createContext<ResumeContextType | undefined>(undefined);
 
 export function ResumeProvider({ children }: { children: ReactNode }) {
-    const [resume, setResume] = useState<Resume>(profileFormDefaultValues);
+    const [profile, setProfile] = useState<Resume>(profileFormDefaultValues);
 
-    const updateResume = (newResume: Partial<Resume>) => {
-        setResume((prev) => ({ ...prev, ...newResume }));
+    const updateProfile = (newProfile: Partial<Resume>) => {
+        setProfile((prev) => ({ ...prev, ...newProfile }));
     };
 
     return (
-        <ResumeContext.Provider value={{ resume, updateResume }}>
+        <ResumeContext.Provider value={{ profile, updateProfile }}>
             {children}
         </ResumeContext.Provider>
     );
