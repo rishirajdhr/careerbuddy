@@ -169,6 +169,12 @@ const WorkSchema = z.object({
     /** The end date of your employment */
     endDate: DateSchema.optional().describe("The end date of your employment"),
 
+    /** Whether you are currently working here */
+    current: z
+        .boolean()
+        .optional()
+        .describe("Whether you are currently working here"),
+
     /** A summary of your responsibilities at the company */
     summary: z
         .string()

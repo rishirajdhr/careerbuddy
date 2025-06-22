@@ -41,6 +41,7 @@ import {
     WorkEndDateField,
     WorkSummaryField,
     WorkLocationField,
+    WorkCurrentField,
 } from "./fields/work";
 import {
     DegreeTypeField,
@@ -289,6 +290,11 @@ function WorkExperience() {
                             <CompanyNameField index={index} />
                             <WorkStartDateField index={index} />
                             <WorkEndDateField index={index} />
+                            <div className="col-start-2">
+                                <WorkCurrentField index={index} />
+                            </div>
+                        </div>
+                        <div className="mt-2 grid grid-cols-2 gap-4">
                             <WorkLocationField index={index} />
                             <WorkSummaryField index={index} />
                         </div>

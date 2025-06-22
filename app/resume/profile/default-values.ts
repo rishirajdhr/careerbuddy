@@ -25,6 +25,7 @@ export const profileFormDefaultValues: Resume = {
             endDate: "",
             summary: "",
             highlights: [],
+            current: false,
         },
     ],
     education: [
