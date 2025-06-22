@@ -1,5 +1,3 @@
-import { DashboardHeader } from "./components/dashboard-header";
-
 export default function DashboardLayout({
     children,
 }: {
@@ -7,7 +5,6 @@ export default function DashboardLayout({
 }) {
     return (
         <div className="min-h-screen bg-gray-50">
-            <DashboardHeader />
             <div className="space-y-6 p-6 pt-8">
                 <div className="mx-auto max-w-7xl">
                     <div className="text-center mb-8">

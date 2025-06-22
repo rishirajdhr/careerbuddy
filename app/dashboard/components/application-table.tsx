@@ -52,10 +52,6 @@ export function ApplicationTable({
     return (
         <TooltipProvider>
             <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                    <h2 className="text-xl font-semibold text-gray-900">Applications</h2>
-                </div>
-
                 <div className="bg-white rounded-lg border overflow-hidden">
                     <table className="w-full">
                         <thead className="bg-gray-50 border-b">
